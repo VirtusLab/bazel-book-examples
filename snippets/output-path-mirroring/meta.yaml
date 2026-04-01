@@ -1,0 +1,16 @@
+id: snippets/output-path-mirroring
+title: Output Path Mirroring
+description: >-
+  Demonstrates that Bazel mirrors package paths under bazel-bin and
+  bazel-testlogs, while different target kinds produce different sample files
+  in those locations.
+refs:
+  - "0.1.4:OutputRoot"
+commands:
+  - command: "bazel build //app:server //lib/util:helpers --java_runtime_version=remotejdk_21"
+    expect: success
+    description: "Builds the binary and Java library so you can inspect bazel-bin/app/ and bazel-bin/lib/util/"
+  - command: "bazel test //tests/api:api_test --java_runtime_version=remotejdk_21"
+    expect: success
+    description: "Runs the test so you can inspect bazel-testlogs/tests/api/api_test/"
+bazel_version: "9.0.0"

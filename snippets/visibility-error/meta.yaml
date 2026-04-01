@@ -1,0 +1,14 @@
+id: snippets/visibility-error
+title: Visibility Violation Error
+description: >-
+  Demonstrates the analysis-phase error when a target depends on
+  another target that doesn't grant it visibility.
+refs:
+  - "0.2.4:Visibility"
+  - "1.1.10:CommonErrors"
+commands:
+  - command: "bazel build //app:server --java_runtime_version=remotejdk_21"
+    expect: error
+    description: "Triggers a visibility violation — //lib:internal is private"
+rules_java_version: "9.0.3"
+bazel_version: "9.0.0"

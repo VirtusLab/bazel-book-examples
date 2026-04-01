@@ -1,0 +1,22 @@
+load("@rules_java//java:defs.bzl", "java_binary", "java_library", "java_test")
+
+java_binary(
+    name = "server",
+    srcs = ["Main.java"],
+    main_class = "app.Main",
+    deps = [":lib"],
+)
+
+java_library(
+    name = "lib",
+    srcs = ["Lib.java"],
+)
+
+java_test(
+    name = "lib_test",
+    srcs = ["LibTest.java"],
+    main_class = "app.LibTest",
+    deps = [":lib"],
+    tags = ["manual"],
+    use_testrunner = False,
+)

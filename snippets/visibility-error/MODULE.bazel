@@ -1,0 +1,3 @@
+module(name = "visibility-error")
+
+bazel_dep(name = "rules_java", version = "9.0.3")

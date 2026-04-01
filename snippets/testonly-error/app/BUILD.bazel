@@ -1,0 +1,8 @@
+load("@rules_java//java:defs.bzl", "java_binary")
+
+java_binary(
+    name = "server",
+    srcs = ["Main.java"],
+    main_class = "app.Main",
+    deps = ["//testutil:test_helpers"],
+)

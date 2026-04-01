@@ -1,0 +1,13 @@
+id: snippets/testonly-error
+title: Testonly Violation Error
+description: >-
+  Demonstrates the error when a non-test target depends on a
+  testonly target, enforced via package(default_testonly = True).
+refs:
+  - "1.2.4:Testonly"
+  - "0.2.6:PackageFunction"
+commands:
+  - command: "bazel build //app:server"
+    expect: error
+    description: "Non-test target depends on testonly target"
+bazel_version: "9.0.0"

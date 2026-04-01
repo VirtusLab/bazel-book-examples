@@ -1,0 +1,17 @@
+id: snippets/glob-retraction
+title: Recursive Glob Retraction At Subpackage Boundary
+description: >-
+  Demonstrates that the same `glob(["**/*.txt"])` matches files in nested
+  directories until a nested `BUILD.bazel` turns that directory into a
+  subpackage, at which point the parent package stops seeing those files.
+refs:
+  - "0.1.3:Package"
+  - "0.3.4:Globs"
+commands:
+  - command: "bazel query 'labels(srcs, //before:texts)'"
+    expect: success
+    description: "Shows the recursive glob including a nested file before a subpackage split."
+  - command: "bazel query 'labels(srcs, //after:texts)'"
+    expect: success
+    description: "Shows the same recursive glob after a nested BUILD file retracts the parent match set."
+bazel_version: "9.0.0"

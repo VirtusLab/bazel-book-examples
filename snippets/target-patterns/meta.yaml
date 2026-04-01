@@ -1,0 +1,28 @@
+id: snippets/target-patterns
+title: Target Pattern Wildcards
+description: >-
+  Demonstrates wildcard target patterns, the manual-tag exclusion,
+  and why --test_tag_filters=manual cannot bring those tests back.
+refs:
+  - "0.2.3:TargetPatterns"
+  - "1.2.3:TestTags"
+commands:
+  - command: "bazel query //..."
+    expect: success
+    description: "Shows that bazel query still sees the manual test target"
+  - command: "bazel test //..."
+    expect: error
+    description: "Shows that wildcard test runs skip the manual-tagged test"
+  - command: "bazel test //app:lib_test"
+    expect: success
+    description: "Shows that the same test runs when named explicitly"
+  - command: "bazel test //... --test_tag_filters=manual"
+    expect: error
+    description: "Shows that test_tag_filters cannot resurrect manual wildcard exclusions"
+  - command: "bazel query '//app:*' --output=label_kind"
+    expect: success
+    description: "Shows all targets including source files"
+  - command: "bazel query '//app:all'"
+    expect: success
+    description: "Shows only rule targets"
+bazel_version: "9.0.0"
