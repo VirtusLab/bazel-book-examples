@@ -1,0 +1,11 @@
+genrule(
+    name = "generate_config",
+    outs = ["generated.txt"],
+    cmd = "printf 'generated config\n' > \"$@\"",
+)
+
+filegroup(
+    name = "generated_bundle",
+    srcs = [":generate_config"],
+    visibility = ["//consumer:__pkg__"],
+)

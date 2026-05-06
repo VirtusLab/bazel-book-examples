@@ -1,0 +1,6 @@
+genrule(
+    name = "copy_generated",
+    srcs = ["//:generated_bundle"],
+    outs = ["copied.txt"],
+    cmd = "cat $(location //:generated_bundle) > \"$@\"",
+)

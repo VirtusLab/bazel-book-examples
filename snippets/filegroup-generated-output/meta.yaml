@@ -1,0 +1,16 @@
+id: snippets/filegroup-generated-output
+title: Filegroup Over A Generated Output
+description: >-
+  Demonstrates that filegroup() can wrap the output of a generating rule and
+  expose that named file set to another package.
+refs:
+  - "0.3.6:Filegroup"
+  - "0.2.7:ExportsFiles"
+commands:
+  - command: "bazel build //consumer:copy_generated"
+    expect: success
+    description: "Builds a consumer target that reads a generated file through a filegroup label."
+  - command: "bazel query 'labels(srcs, //:generated_bundle)'"
+    expect: success
+    description: "Shows that the filegroup's srcs point at the generating target label."
+bazel_version: "9.0.0"
