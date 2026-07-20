@@ -1,0 +1,6 @@
+module(name = "repo-mapping-runfiles")
+
+bazel_dep(name = "rules_shell", version = "0.6.1")
+
+aux = use_extension("//tools:aux_extension.bzl", "aux_extension")
+use_repo(aux, "aux_data")

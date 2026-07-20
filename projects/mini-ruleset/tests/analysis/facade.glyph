@@ -1,0 +1,3 @@
+module tests.facade
+import tests.api
+message "hello from analysis facade"

@@ -1,0 +1,15 @@
+id: snippets/test-suites
+title: Test Suite Expansion
+description: >-
+  Demonstrates that `test_suite` gives multiple test targets one stable label,
+  including nested suites that expand across package boundaries.
+refs:
+  - "1.2.6:TestSuites"
+commands:
+  - command: "bazel query \"kind(test, //:*)\""
+    expect: success
+    description: "Shows the suite targets defined in the root package"
+  - command: "bazel query \"tests(//:ci_tests)\""
+    expect: success
+    description: "Expands nested suites into the concrete test targets Bazel would run"
+bazel_version: "9.0.0"

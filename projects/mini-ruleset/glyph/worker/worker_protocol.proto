@@ -1,0 +1,40 @@
+// The Bazel persistent-worker protocol, vendored into this ruleset.
+//
+// This is the standard blaze.worker schema Bazel uses to talk to a worker over
+// stdin/stdout when `requires-worker-protocol: proto` is set (the default).
+// Real rulesets vendor this same file (rules_scala, rules_kotlin) rather than
+// depending on Bazel's own source layout. Only the fields this teaching worker
+// reads or writes are exercised, but the whole message shape is kept faithful.
+syntax = "proto3";
+
+package blaze.worker;
+
+// An input file for a WorkRequest, with its content digest so a worker can
+// validate warm state against the inputs Bazel knows about.
+message Input {
+  string path = 1;
+  bytes digest = 2;
+}
+
+// One unit of work. Bazel sends these to the worker on stdin.
+message WorkRequest {
+  repeated string arguments = 1;
+  repeated Input inputs = 2;
+  // 0 for singleplex workers; nonzero to match concurrent multiplex responses.
+  int32 request_id = 3;
+  // Set on a cancel request (only used when the worker opts into cancellation).
+  bool cancel = 4;
+  int32 verbosity = 5;
+  // Populated for multiplex sandboxing; input/output paths are relative to it.
+  string sandbox_dir = 6;
+}
+
+// The result of one WorkRequest. The worker writes these to stdout.
+message WorkResponse {
+  int32 exit_code = 1;
+  // User-facing tool output. stdout is the protocol stream, so diagnostics go
+  // here instead of being written directly.
+  string output = 2;
+  int32 request_id = 3;
+  bool was_cancelled = 4;
+}

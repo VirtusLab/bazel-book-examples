@@ -1,0 +1,161 @@
+load(
+    "//glyph:defs.bzl",
+    "glyph_app",
+    "glyph_binary",
+    "glyph_debug_binary",
+    "glyph_debug_report",
+    "glyph_legacy_app",
+    "glyph_library",
+    "glyph_report",
+    "glyph_split_report",
+    "glyph_test",
+)
+
+package(default_visibility = ["//visibility:public"])
+
+# The smallest target used by the capstone's bootstrap checkpoints. It stays in
+# the finished project so readers can compare the temporary rule shell with the
+# production implementation without pulling in deps, resources, or linking.
+glyph_library(
+    name = "bootstrap",
+    srcs = ["bootstrap.glyph"],
+    module = "app.bootstrap",
+)
+
+# Kept separate from :bootstrap so the end-state command catalog can exercise a
+# real worker cache miss; changing only --strategy does not invalidate an action.
+glyph_library(
+    name = "bootstrap_worker",
+    srcs = ["bootstrap_worker.glyph"],
+    module = "app.bootstrap_worker",
+)
+
+# Local stand-in used by the capstone before stage 7 introduces the module
+# extension. The finished graph uses @glyph_stdlib instead; preserving this leaf
+# makes the earlier checkpoint reproducible without external repositories.
+glyph_library(
+    name = "bootstrap_stdlib",
+    srcs = ["bootstrap_stdlib.glyph"],
+    module = "stdlib.print",
+)
+
+glyph_library(
+    name = "api",
+    srcs = ["api.glyph"],
+    module = "app.api",
+    exports = ["@glyph_stdlib//:lib"],
+)
+
+glyph_library(
+    name = "core",
+    srcs = ["core.glyph"],
+    module = "app.core",
+    data = ["runtime/greeting.txt"],
+    deps = [":api"],
+)
+
+glyph_library(
+    name = "debug_probe",
+    srcs = ["debug_probe.glyph"],
+    module = "app.debug_probe",
+)
+
+# select() closes the loop 4.7.2 calls "the dual of transitions": the debug
+# transition writes //glyph/settings:mode=debug, //glyph/settings:debug_mode is
+# the config_setting that reads it back, and this select() consumes it. Linking
+# an extra module is safe here because binary deps are link-only (no import
+# check), so :debug_probe shows up in the output only under a debug config:
+#   bazel run //examples/basic:hello         # no "debug probe active" line
+#   bazel run //examples/basic:hello_debug   # glyph_debug_binary flips mode -> the line appears
+glyph_binary(
+    name = "hello",
+    deps = [":core"] + select({
+        "//glyph/settings:debug_mode": [":debug_probe"],
+        "//conditions:default": [],
+    }),
+    main_module = "app.core",
+)
+
+# 4.6.7: declarative platform incompatibility. target_compatible_with requires
+# the *target* platform to carry //examples/platforms:glyph_linux, a custom
+# constraint the auto-detected host platform never sets (on Linux or macOS). So
+# on a default build Bazel attaches IncompatiblePlatformProvider and:
+#   * skips this target under wildcards (bazel build //... stays green), and
+#   * errors when it is named directly:
+#       bazel build //examples/basic:hello_linux_only
+#       -> "Target //examples/basic:hello_linux_only is incompatible and cannot
+#           be built, but was explicitly requested."
+# _binary_impl never runs while incompatible: the decision happens during attr
+# evaluation, before analysis enters the rule. Satisfy the constraint to build
+# it: bazel build //examples/basic:hello_linux_only --platforms=//examples/platforms:linux
+glyph_binary(
+    name = "hello_linux_only",
+    deps = [":core"],
+    main_module = "app.core",
+    target_compatible_with = ["//examples/platforms:glyph_linux"],
+)
+
+glyph_test(
+    name = "hello_test",
+    size = "small",
+    binary = ":hello",
+    expected = "hello from app.core",
+)
+
+glyph_test(
+    name = "runtime_data_test",
+    size = "small",
+    binary = ":hello",
+    expected = "resource examples/basic/runtime/greeting.txt: hello from Glyph runtime data",
+)
+
+glyph_report(
+    name = "bootstrap_report",
+    deps = [":bootstrap"],
+)
+
+glyph_report(
+    name = "module_report",
+    deps = [":core"],
+)
+
+glyph_debug_binary(
+    name = "hello_debug",
+    binary = ":hello",
+)
+
+# Incoming-edge transition (rule(cfg = ...)): this target is analyzed under
+# mode=debug even though no --//glyph/settings:mode flag is set. The generated
+# report prints mode=debug, unlike a plain build:
+#   bazel build //examples/basic:module_report_debug
+#   cat bazel-bin/examples/basic/module_report_debug.incoming.txt   # mode=debug
+glyph_debug_report(
+    name = "module_report_debug",
+    deps = [":core"],
+)
+
+glyph_split_report(
+    name = "hello_split_report",
+    binary = ":hello",
+)
+
+glyph_legacy_app(
+    name = "legacy_hello",
+    srcs = ["legacy.glyph"],
+    module = "app.legacy",
+    main_module = "app.legacy",
+    deps = ["@glyph_stdlib//:lib"],
+)
+
+glyph_app(
+    name = "macro_hello",
+    srcs = ["macro.glyph"],
+    module = "app.macro",
+    main_module = "app.macro",
+    deps = ["@glyph_stdlib//:lib"],
+)
+
+alias(
+    name = "metadata",
+    actual = ":core",
+)

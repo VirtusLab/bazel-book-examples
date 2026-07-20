@@ -1,0 +1,8 @@
+load(":generate_pb2.bzl", "generate_pb2")
+
+# Maintainer-only regeneration. The ruleset's published worker does not depend
+# on this package or on the Protobuf module used to resolve its compiler.
+generate_pb2(
+    name = "worker_protocol_pb2",
+    src = "//glyph/worker:worker_protocol.proto",
+)

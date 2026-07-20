@@ -1,0 +1,14 @@
+id: snippets/vendor-mode
+title: Vendor Mode
+description: >-
+  Shows what bazel vendor creates from an archive-backed local-registry
+  dependency (with BCR available for Bazel tooling) and proves that a build with
+  a fresh output base and empty repository cache uses the vendored dependency
+  source after its original archive has been removed.
+refs:
+  - "3.1.9:OfflineBuilds"
+commands:
+  - command: "python3 tools/assert_vendor_mode.py"
+    expect: success
+    description: "Vendors a local archive, removes that archive, then verifies a build with a fresh output base and empty repository cache through --vendor_dir."
+bazel_version: "9.0.0"

@@ -1,0 +1,20 @@
+id: snippets/eager-fetch-load-edge
+title: Eager Fetch Load Edge Query
+description: >-
+  Demonstrates that deps() follows target dependencies, while
+  buildfiles(deps(...)) also exposes external .bzl files loaded while Bazel
+  evaluates those packages.
+refs:
+  - "3.1.5:EagerFetch"
+  - "2.2:ThreePhases"
+commands:
+  - command: "bazel query \"filter('@', deps(//app:lightweight))\""
+    expect: success
+    description: "Shows that the lightweight target has no external target dependency on the load-only helper repo."
+  - command: "bazel query \"buildfiles(deps(//app:lightweight))\""
+    expect: success
+    description: "Shows the BUILD file closure, including the external .bzl file loaded by //app."
+  - command: "python3 tools/assert_query_edges.py"
+    expect: success
+    description: "Asserts that only buildfiles(deps(...)) reveals the @load_helper .bzl load edge."
+bazel_version: "9.0.0"

@@ -1,0 +1,12 @@
+genrule(
+    name = "needs_env",
+    outs = ["token.txt"],
+    cmd = """
+if [ "$${DEMO_TOKEN:-}" != "expected" ]; then
+  echo "missing DEMO_TOKEN in action environment" >&2
+  echo "fix: bazel build --action_env=DEMO_TOKEN=expected //env:needs_env" >&2
+  exit 1
+fi
+printf '%s\n' "$${DEMO_TOKEN}" > "$@"
+""",
+)

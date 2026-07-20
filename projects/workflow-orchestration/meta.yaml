@@ -1,0 +1,32 @@
+id: projects/workflow-orchestration
+title: Workflow Orchestration (Outside the Graph)
+description: >-
+  A small workspace that draws the boundary between Bazel's declared outputs
+  and orchestration around Bazel. It includes a normal build target, a
+  side-effecting `.publish` launcher invoked with `bazel run`, and a query-
+  driven release workflow that selects labels with `bazel query` before
+  handing them back to `bazel build`.
+refs:
+  - "3.7.1:BazelScope"
+  - "3.7.2:WorkflowPatterns"
+  - "3.7.3:AXL"
+languages:
+  - bazel
+  - shell
+commands:
+  - command: "bazel build //release:notes"
+    expect: success
+    description: "Builds the declared release artifact under bazel-out (inside the boundary)."
+  - command: "bazel build //release:summary"
+    expect: success
+    description: "Builds the second release-tagged artifact so the workflow query has more than one match."
+  - command: "bazel run //release:notes.publish"
+    expect: success
+    description: "Runs the .publish launcher; copies artifacts into out/published/ in the workspace (outside the boundary)."
+  - command: "bazel run //release:notes.publish"
+    expect: success
+    description: "Re-runs the launcher to verify idempotence: out/published/ is scrubbed and rewritten."
+  - command: "./tools/run_release_targets.sh"
+    expect: success
+    description: "Query-driven workflow: bazel query selects release-tagged labels, then bazel build builds them."
+bazel_version: "9.0.0"

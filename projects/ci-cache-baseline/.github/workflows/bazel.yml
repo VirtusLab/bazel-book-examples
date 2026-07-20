@@ -1,0 +1,36 @@
+name: Bazel
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      # Bazel-aware action: installs a pinned Bazelisk, reads .bazelversion,
+      # and restores Bazelisk / disk / repository caches in one step. See
+      # https://github.com/bazel-contrib/setup-bazel for inputs.
+      - name: Set up Bazel
+        uses: bazel-contrib/setup-bazel@0.19.0
+        with:
+          bazelisk-version: v1.25.0
+          bazelisk-cache: true
+          disk-cache: ${{ github.workflow }}
+          repository-cache: true
+
+      - name: Run Bazel CI tests
+        run: bash tools/ci_bazel.sh //...
+
+      # Stop the server so a stateful runner / cache-save step sees a
+      # quiescent output base. See knowledge/conspect/3-maintainer/3.6.2.
+      - name: Stop Bazel server before cache save
+        if: always()
+        run: bazel shutdown

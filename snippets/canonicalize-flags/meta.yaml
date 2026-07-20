@@ -1,0 +1,20 @@
+id: snippets/canonicalize-flags
+title: Canonicalize Flags
+description: >-
+  Verifies bazel canonicalize-flags output: short and boolean flags expand to
+  their long canonical form, --config=ci passes through unexpanded, and a flag
+  the chosen --for_command does not understand causes the invocation to fail.
+refs:
+  - "3.2.4:CommandLineFlags"
+  - "3.2.1:BazelrcHierarchy"
+commands:
+  - command: "bazel canonicalize-flags -- -c opt -k --define=ENV=prod"
+    expect: success
+    description: "Expands -c to --compilation_mode=opt, normalizes -k to --keep_going=1, and passes --define=ENV=prod through unchanged."
+  - command: "bazel canonicalize-flags --for_command=test -- --test_output=errors --config=ci"
+    expect: success
+    description: "Scopes parsing to the test command, accepts the test-only --test_output flag, and leaves --config=ci unexpanded because config expansion is not part of canonicalization."
+  - command: "bazel canonicalize-flags --for_command=version -- --keep_going"
+    expect: error
+    description: "Fails because --keep_going is not a valid option for the version command, demonstrating that --for_command rejects flags the chosen command does not understand."
+bazel_version: "9.0.0"

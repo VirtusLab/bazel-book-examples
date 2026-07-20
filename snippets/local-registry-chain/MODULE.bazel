@@ -1,0 +1,3 @@
+module(name = "local_registry_chain")
+
+bazel_dep(name = "registry_dep", version = "1.0.0")

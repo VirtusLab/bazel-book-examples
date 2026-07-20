@@ -1,0 +1,17 @@
+id: snippets/exports-files-error
+title: Raw File Visibility Error
+description: >-
+  Demonstrates a cross-package reference to a raw source file whose
+  exports_files() visibility does not grant access, plus the fixed export.
+refs:
+  - "0.2.7:ExportsFiles"
+  - "0.2.4:Visibility"
+  - "1.1.10:CommonErrors"
+commands:
+  - command: "bazel build //app:copy_private"
+    expect: error
+    description: "Fails because //data:private.txt is exported only to its own package."
+  - command: "bazel build //app:copy_shared"
+    expect: success
+    description: "Succeeds because //data:shared.txt is explicitly visible to //app."
+bazel_version: "9.0.0"

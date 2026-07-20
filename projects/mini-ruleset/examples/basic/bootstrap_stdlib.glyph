@@ -1,0 +1,2 @@
+module stdlib.print
+message "hello from glyph stdlib"

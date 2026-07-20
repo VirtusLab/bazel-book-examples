@@ -1,0 +1,4 @@
+common --color=yes
+common --curses=no
+
+build --show_result=5

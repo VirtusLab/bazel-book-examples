@@ -1,0 +1,49 @@
+load("//glyph:defs.bzl", "glyph_library")
+
+package(default_visibility = ["//visibility:public"])
+
+# Negative examples. Each target is INTENTIONALLY broken to show a real failure
+# mode, so the rule's contract is provably enforced by actions rather than only
+# described in docs. Every target carries tags = ["manual"] so `bazel build //...`
+# and `bazel test //...` skip them and the project as a whole stays green; build
+# one by name to see exactly what Bazel prints.
+
+# Compile-time failure. The source imports stdlib.print, but the target declares
+# no deps, so glyphc's `compile` subcommand cannot satisfy the import and exits
+# non-zero:
+#   bazel build //examples/errors:missing_import
+#   -> GlyphCompile fails: "errors.missing_import: import 'stdlib.print' is
+#       missing from deps"
+glyph_library(
+    name = "missing_import",
+    srcs = ["missing_import.glyph"],
+    module = "errors.missing_import",
+    tags = ["manual"],
+)
+
+# Compile-time failure. The source declares `resource examples/errors/absent.txt`,
+# but the target's data is empty, so the compiler cannot record the resource:
+#   bazel build //examples/errors:missing_resource
+#   -> GlyphCompile fails: "errors.missing_resource: resource
+#       'examples/errors/absent.txt' is missing from data"
+glyph_library(
+    name = "missing_resource",
+    srcs = ["missing_resource.glyph"],
+    module = "errors.missing_resource",
+    tags = ["manual"],
+)
+
+# Validation-time failure. This library COMPILES (the module attr matches the
+# source), but the module name is not namespaced, so the execution-phase
+# _validation action rejects it. Validation actions run automatically on a plain
+# `bazel build` (opt out with --norun_validations) — which is precisely why the
+# gate is stronger than a marker file that only gets written:
+#   bazel build //examples/errors:unnamespaced
+#   -> GlyphValidate fails: "module name 'broken' is not namespaced; expected
+#       '<namespace>.<name>'"
+glyph_library(
+    name = "unnamespaced",
+    srcs = ["unnamespaced.glyph"],
+    module = "broken",
+    tags = ["manual"],
+)

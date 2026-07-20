@@ -1,0 +1,19 @@
+load("@rules_shell//shell:sh_test.bzl", "sh_test")
+
+sh_test(
+    name = "message_test",
+    srcs = ["message_test.sh"],
+    args = ["$(rlocationpath //app:message.txt)"],
+    data = ["//app:message.txt"],
+    size = "small",
+    deps = ["@bazel_tools//tools/bash/runfiles"],
+)
+
+sh_test(
+    name = "generated_output_test",
+    srcs = ["generated_output_test.sh"],
+    args = ["$(rlocationpath //app:uppercase_message)"],
+    data = ["//app:uppercase_message"],
+    size = "small",
+    deps = ["@bazel_tools//tools/bash/runfiles"],
+)

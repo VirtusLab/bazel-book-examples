@@ -1,0 +1,6 @@
+# Copy to user.bazelrc for local-only preferences. The workspace .bazelrc
+# uses `try-import %workspace%/user.bazelrc`, so this file is optional and
+# user.bazelrc itself is git-ignored. Anything set here overrides the
+# workspace defaults for the current developer only.
+build --sandbox_debug
+build --verbose_failures

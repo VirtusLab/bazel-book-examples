@@ -1,0 +1,12 @@
+package(default_visibility = ["//visibility:public"])
+
+# Anchor target for the sandbox-network discussion. The real demonstration is
+# what `--sandbox_default_allow_network=false` would do to an action that
+# actually opens a socket; this no-op `cmd` keeps the snippet deterministic
+# under validation. See README.md for how to swap in a real network probe.
+genrule(
+    name = "requires_network",
+    outs = ["requires_network.txt"],
+    cmd = "echo no-op > $@",
+    tags = ["requires-network"],
+)

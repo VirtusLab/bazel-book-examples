@@ -1,0 +1,54 @@
+load(":select_macro.bzl", "legacy_macro_select")
+
+package(default_visibility = ["//visibility:public"])
+
+filegroup(
+    name = "linux_runtime",
+    srcs = ["linux_config.txt"],
+)
+
+filegroup(
+    name = "macos_runtime",
+    srcs = ["macos_config.txt"],
+)
+
+filegroup(
+    name = "generic_runtime",
+    srcs = ["generic_config.txt"],
+)
+
+filegroup(
+    name = "missing_default",
+    srcs = select({
+        "//platforms:linux_target": [":linux_runtime"],
+        "//platforms:macos_target": [":macos_runtime"],
+    }),
+)
+
+filegroup(
+    name = "missing_default_custom",
+    srcs = select(
+        {
+            "//platforms:linux_target": [":linux_runtime"],
+            "//platforms:macos_target": [":macos_runtime"],
+        },
+        no_match_error = "select-errors supports only //platforms:linux and //platforms:macos",
+    ),
+)
+
+filegroup(
+    name = "server",
+    srcs = ["server.txt"] + select({
+        "//platforms:linux_target": [":linux_runtime"],
+        "//platforms:macos_target": [":macos_runtime"],
+        "//conditions:default": [":generic_runtime"],
+    }),
+)
+
+legacy_macro_select(
+    name = "macro_select_error",
+    os = select({
+        "//platforms:linux_target": "linux",
+        "//conditions:default": "generic",
+    }),
+)

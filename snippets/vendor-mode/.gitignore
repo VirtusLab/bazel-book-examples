@@ -1,0 +1,3 @@
+.generated-registry/
+dist/
+vendor_src/

@@ -1,0 +1,14 @@
+id: snippets/split-transition-keys
+title: Split Transition Keys
+description: >-
+  Demonstrates that ctx.split_attr is keyed by the outer keys returned from a
+  dict-of-dicts split transition, not by the Starlark build-setting values
+  written inside each branch.
+refs:
+  - "4.7.3:SplitTransitions"
+  - "4.7.2:StarlarkTransitions"
+commands:
+  - command: "bazel build //:probe && grep -qx 'branch_alpha=x86' bazel-bin/probe.txt && grep -qx 'branch_beta=arm64' bazel-bin/probe.txt && ! grep -Eq '^(x86|arm64)=' bazel-bin/probe.txt"
+    expect: success
+    description: "Shows ctx.split_attr keys are branch_alpha/branch_beta while the configured build-setting values are x86/arm64."
+bazel_version: "9.0.0"

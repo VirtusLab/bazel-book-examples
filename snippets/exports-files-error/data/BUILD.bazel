@@ -1,0 +1,9 @@
+exports_files(
+    ["private.txt"],
+    visibility = ["//visibility:private"],
+)
+
+exports_files(
+    ["shared.txt"],
+    visibility = ["//app:__pkg__"],
+)

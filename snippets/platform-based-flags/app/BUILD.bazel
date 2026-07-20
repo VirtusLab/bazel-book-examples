@@ -1,0 +1,9 @@
+genrule(
+    name = "selected_file",
+    srcs = select({
+        "//config:device_enabled": ["device.txt"],
+        "//conditions:default": ["host.txt"],
+    }),
+    outs = ["selected.txt"],
+    cmd = "cat $(SRCS) > $@",
+)

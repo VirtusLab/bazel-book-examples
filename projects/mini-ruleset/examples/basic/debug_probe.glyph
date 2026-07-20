@@ -1,0 +1,2 @@
+module app.debug_probe
+message "debug probe active"

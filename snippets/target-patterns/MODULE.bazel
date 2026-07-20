@@ -1,3 +1,41 @@
 module(name = "target-patterns")
 
 bazel_dep(name = "rules_java", version = "9.0.3")
+bazel_dep(name = "llvm", version = "0.8.11")
+
+llvm_toolchain = use_extension("@llvm//extensions:toolchain.bzl", "toolchain")
+llvm_toolchain.exec(
+    arch = "x86_64",
+    os = "linux",
+)
+llvm_toolchain.exec(
+    arch = "aarch64",
+    os = "linux",
+)
+llvm_toolchain.exec(
+    arch = "x86_64",
+    os = "macos",
+)
+llvm_toolchain.exec(
+    arch = "aarch64",
+    os = "macos",
+)
+llvm_toolchain.target(
+    arch = "x86_64",
+    os = "linux",
+)
+llvm_toolchain.target(
+    arch = "aarch64",
+    os = "linux",
+)
+llvm_toolchain.target(
+    arch = "x86_64",
+    os = "macos",
+)
+llvm_toolchain.target(
+    arch = "aarch64",
+    os = "macos",
+)
+use_repo(llvm_toolchain, "llvm_toolchains")
+
+register_toolchains("@llvm_toolchains//:all")

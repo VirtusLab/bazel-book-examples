@@ -1,0 +1,43 @@
+load("@rules_shell//shell:sh_binary.bzl", "sh_binary")
+
+package(default_visibility = ["//visibility:public"])
+
+sh_binary(
+    name = "converter",
+    srcs = ["converter.sh"],
+)
+
+# CORRECT: every input/output/tool path comes from a Make variable that Bazel
+# resolves into the actual sandbox path. Article anchor for the
+# Make-variable anatomy.
+genrule(
+    name = "generated_good",
+    srcs = ["input.txt"],
+    outs = ["generated_good.txt"],
+    cmd = "$(execpath :converter) $(location :input.txt) > $(RULEDIR)/generated_good.txt",
+    tools = [":converter"],
+)
+
+# BROKEN: the cmd hard-codes 'config/input.txt' instead of $(location :input.txt),
+# and input.txt is not declared in srcs at all. Under Bazel 9's default sandboxed
+# execution on Linux/macOS, the input is not staged into the action's working
+# directory and `cat` fails. Switching to --spawn_strategy=local would make the
+# failure disappear, which is the host leak {{2.3:Hermeticity}} warns about.
+# Do not "fix" this target; it is here to demonstrate the failure.
+genrule(
+    name = "bad_relative_path",
+    outs = ["bad_relative_path.txt"],
+    cmd = "cat config/input.txt > $@",
+)
+
+# BROKEN: $(execpath :converter) is referenced in cmd but :converter is not
+# declared in srcs/outs/tools. Make-variable resolution catches this at analysis
+# time, before any action runs. Do not "fix" this target; it is here to
+# demonstrate that {{3.4.1:Genrule}}'s "tools belong in tools" rule is enforced
+# by the loader, not just by the sandbox.
+genrule(
+    name = "missing_tool_decl",
+    srcs = ["input.txt"],
+    outs = ["missing_tool_decl.txt"],
+    cmd = "$(execpath :converter) $(location :input.txt) > $@",
+)

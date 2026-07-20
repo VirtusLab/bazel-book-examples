@@ -1,0 +1,13 @@
+id: snippets/starlark-traceback-error
+title: BUILD / .bzl Traceback Error
+description: >-
+  Demonstrates a package-loading failure with a real Starlark traceback
+  from the BUILD file into a called macro.
+refs:
+  - "1.1.10:CommonErrors"
+  - "0.3:StarlarkSyntax"
+commands:
+  - command: "bazel build //:demo"
+    expect: error
+    description: "Fails during package loading because the macro calls a missing string method."
+bazel_version: "9.0.0"

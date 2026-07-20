@@ -1,0 +1,13 @@
+genrule(
+    name = "copy_private",
+    srcs = ["//data:private.txt"],
+    outs = ["private_copy.txt"],
+    cmd = "cp $(location //data:private.txt) $@",
+)
+
+genrule(
+    name = "copy_shared",
+    srcs = ["//data:shared.txt"],
+    outs = ["shared_copy.txt"],
+    cmd = "cp $(location //data:shared.txt) $@",
+)

@@ -1,0 +1,5 @@
+module tests.subject
+import tests.facade
+import tests.api
+resource tests/analysis/data/runtime.txt
+message "hello from analysis subject"

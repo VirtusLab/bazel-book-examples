@@ -1,0 +1,8 @@
+module(name = "eager-fetch-load-edge")
+
+bazel_dep(name = "load_helper", version = "0.0.0")
+
+local_path_override(
+    module_name = "load_helper",
+    path = "load_helper",
+)

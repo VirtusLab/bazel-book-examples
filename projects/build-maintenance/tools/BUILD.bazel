@@ -1,0 +1,23 @@
+load("@rules_shell//shell:sh_binary.bzl", "sh_binary")
+
+package(default_visibility = ["//visibility:public"])
+
+sh_binary(
+    name = "check_build_files",
+    srcs = ["check_build_files.sh"],
+)
+
+sh_binary(
+    name = "print_buildozer_plan",
+    srcs = ["print_buildozer_plan.sh"],
+)
+
+sh_binary(
+    name = "print_format_plan",
+    srcs = ["print_format_plan.sh"],
+)
+
+sh_binary(
+    name = "print_gazelle_plan",
+    srcs = ["print_gazelle_plan.sh"],
+)

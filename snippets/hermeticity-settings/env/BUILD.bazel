@@ -1,0 +1,17 @@
+load("@rules_shell//shell:sh_test.bzl", "sh_test")
+
+package(default_visibility = ["//visibility:public"])
+
+genrule(
+    name = "print_env",
+    outs = ["print_env.txt"],
+    cmd = "echo \"$${DEMO_VALUE:-unset}\" > $@",
+)
+
+sh_test(
+    name = "print_env_test",
+    srcs = ["check_env.sh"],
+    size = "small",
+    args = ["$(rootpath :print_env.txt)"],
+    data = [":print_env.txt"],
+)

@@ -1,0 +1,31 @@
+load("@rules_python//python:defs.bzl", "py_binary", "py_library", "py_test")
+
+package(default_visibility = ["//visibility:public"])
+
+# The compiler logic also ships as a library so the persistent-worker adapter in
+# //glyph/worker can `import glyphc` and call it in-process (that is what keeps
+# worker mode warm). imports = ["."] puts this package directory on PYTHONPATH so
+# the module is importable as `glyphc`.
+py_library(
+    name = "glyphc_lib",
+    srcs = ["glyphc.py"],
+    imports = ["."],
+)
+
+# The Glyph compiler is a real built-in-repo tool, not a raw script. Building it
+# as a py_binary gives the toolchain a proper executable with its own runfiles
+# and a portable launcher, instead of depending on a +x bit and shebang on
+# glyphc.py. This is the idiomatic shape for a "tool built from source"; the
+# link/report/validate actions invoke it one-shot.
+py_binary(
+    name = "glyphc",
+    srcs = ["glyphc.py"],
+    main = "glyphc.py",
+    python_version = "3.13",
+)
+
+py_test(
+    name = "glyphc_test",
+    srcs = ["glyphc_test.py"],
+    deps = [":glyphc_lib"],
+)

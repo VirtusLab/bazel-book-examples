@@ -1,0 +1,39 @@
+id: snippets/basic-query
+title: Basic Bazel Query
+description: >-
+  Demonstrates the first operator split for bazel query: target patterns slice
+  the current repo, while deps() follows reachable graph nodes from one target.
+refs:
+  - "0.2.3:TargetPatterns"
+  - "1.1.8:QueryPreview"
+  - "5.1.1:QueryBasics"
+  - "5.1.6:SkyQuery"
+commands:
+  - command: "bazel query //..."
+    expect: success
+    description: "Lists all rule targets in the snippet workspace"
+  - command: "bazel query 'deps(//app:runner)'"
+    expect: success
+    description: "Shows the reachable closure of //app:runner, including files and an external repo label"
+  - command: "bazel query 'rdeps(//..., //lib:core)'"
+    expect: success
+    description: "Finds repository targets that depend transitively on //lib:core"
+  - command: "bazel query 'somepath(//app:runner, //lib:core)'"
+    expect: success
+    description: "Returns one witness path from //app:runner to //lib:core"
+  - command: "bazel query --output=graph 'allpaths(//app:runner, //lib:core)'"
+    expect: success
+    description: "Emits the complete two-branch path subgraph as Graphviz DOT"
+  - command: "bazel query 'kind(\"filegroup rule\", rdeps(//..., //lib:core))'"
+    expect: success
+    description: "Restricts reverse dependencies to filegroup rules"
+  - command: "bazel query --output=build //app:runner"
+    expect: success
+    description: "Prints the loaded runner rule in reconstructed BUILD form"
+  - command: "bazel query --universe_scope=//... --order_output=no 'allrdeps(//lib:core)'"
+    expect: success
+    description: "Finds all reverse dependencies of //lib:core in an explicit repository-wide Sky Query universe"
+  - command: "bazel query --infer_universe_scope --order_output=no 'allrdeps(//lib:core)'"
+    expect: success
+    description: "Demonstrates the inferred-universe form whose only target pattern is //lib:core"
+bazel_version: "9.0.0"

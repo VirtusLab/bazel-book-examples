@@ -1,0 +1,16 @@
+platform(
+    name = "parent",
+    constraint_values = [],
+    flags = [
+        "--//config:device_mode=false",
+    ],
+)
+
+platform(
+    name = "device",
+    constraint_values = [],
+    parents = [":parent"],
+    flags = [
+        "--//config:device_mode=true",
+    ],
+)

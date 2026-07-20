@@ -1,0 +1,23 @@
+# CI should be quiet and deterministic enough for log scraping.
+common:ci --announce_rc
+common:ci --color=no
+common:ci --curses=no
+
+# These paths are restored and saved by the sample GitHub Actions workflow.
+# The repository cache stores downloaded external archives; the disk cache
+# stores action results and output blobs.
+build:ci --repository_cache=~/.cache/bazel-repo
+build:ci --disk_cache=~/.cache/bazel-disk
+build:ci --keep_going
+build:ci --noshow_progress
+build:ci --show_result=20
+
+test:ci --test_output=errors
+test:ci --test_summary=short
+
+# Remote cache placeholders. Uncomment only after a real service and auth story
+# exist; the local example intentionally does not require a cache server.
+# build:ci --remote_cache=https://cache.example.com/bazel
+# build:ci --remote_upload_local_results=true
+# build:developer-remote --remote_cache=https://cache.example.com/bazel
+# build:developer-remote --remote_upload_local_results=false

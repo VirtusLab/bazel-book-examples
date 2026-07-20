@@ -1,0 +1,3 @@
+load(":analysis_tests.bzl", "glyph_analysis_test_suite")
+
+glyph_analysis_test_suite(name = "glyph_analysis_test")

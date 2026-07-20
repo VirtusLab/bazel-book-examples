@@ -1,0 +1,17 @@
+id: snippets/missing-runfiles-error
+title: Missing Runtime Data Error
+description: >-
+  Demonstrates a binary that tries to read a runtime file from runfiles without
+  declaring it in data, then fixes the target with data and $(rlocationpath).
+refs:
+  - "0.3.3:Attributes"
+  - "1.1.2:BazelRun"
+  - "2.3.2:Sandboxing"
+commands:
+  - command: "bazel run //app:broken_reader"
+    expect: error
+    description: "Fails because message.txt is not in the binary's runfiles."
+  - command: "bazel run //app:fixed_reader"
+    expect: success
+    description: "Succeeds because message.txt is declared in data and passed as an rlocation path."
+bazel_version: "9.0.0"

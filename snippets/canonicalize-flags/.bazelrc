@@ -1,0 +1,3 @@
+build:ci --keep_going
+build:ci --announce_rc
+build:ci --verbose_failures

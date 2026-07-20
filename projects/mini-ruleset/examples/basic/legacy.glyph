@@ -1,0 +1,4 @@
+module app.legacy
+import stdlib.print
+message "hello from legacy macro"
+entry main

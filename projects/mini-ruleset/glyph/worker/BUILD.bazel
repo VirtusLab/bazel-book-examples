@@ -1,0 +1,31 @@
+load("@rules_python//python:defs.bzl", "py_binary")
+
+# The worker adapter is internal ruleset machinery. Only the toolchain wires it
+# in, so it does not need to be public.
+package(default_visibility = ["//glyph/toolchains:__pkg__"])
+
+# The schema remains the source of truth. Its official protoc output is checked
+# in so the published worker has no build-time edge to Protobuf's Bazel source
+# runtime. //tools/validation/protobuf regenerates and diffs it for maintainers.
+exports_files(
+    ["worker_protocol.proto"],
+    visibility = ["//tools/validation/protobuf:__pkg__"],
+)
+
+# The persistent-worker adapter executable. Its glyph_worker.py docstring owns
+# the full story; in short it imports //compiler:glyphc_lib and runs each request
+# in-process, and it also runs one-shot without --persistent_worker so the same
+# target backs GlyphCompile whether or not the worker strategy is enabled.
+py_binary(
+    name = "worker",
+    srcs = [
+        "glyph_worker.py",
+        "worker_protocol_pb2.py",
+    ],
+    main = "glyph_worker.py",
+    python_version = "3.13",
+    deps = [
+        "//compiler:glyphc_lib",
+        "@rules_glyph_pip//protobuf",
+    ],
+)

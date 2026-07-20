@@ -1,0 +1,16 @@
+load("@rules_shell//shell:sh_binary.bzl", "sh_binary")
+
+package(default_visibility = ["//visibility:public"])
+
+sh_binary(
+    name = "uses_runfiles",
+    srcs = ["uses_runfiles.sh"],
+    args = ["$(rlocationpath @aux_data//:value.txt)"],
+    data = ["@aux_data//:value.txt"],
+    deps = ["@bazel_tools//tools/bash/runfiles"],
+)
+
+sh_binary(
+    name = "assumes_canonical_path",
+    srcs = ["assumes_canonical_path.sh"],
+)

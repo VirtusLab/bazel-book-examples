@@ -1,0 +1,4 @@
+filegroup(
+    name = "uses_registry_dep",
+    srcs = ["@registry_dep//:message.txt"],
+)

@@ -1,0 +1,15 @@
+test_suite(
+    name = "smoke_tests",
+    tests = [
+        "//integration:api_test",
+        "//unit:fast_test",
+    ],
+)
+
+test_suite(
+    name = "ci_tests",
+    tests = [
+        ":smoke_tests",
+        "//integration:db_test",
+    ],
+)

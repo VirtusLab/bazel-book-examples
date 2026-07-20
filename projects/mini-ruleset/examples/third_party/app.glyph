@@ -1,0 +1,5 @@
+module thirdparty.app
+import stdlib.print
+import math.add
+message "hello from third-party Glyph deps"
+entry main

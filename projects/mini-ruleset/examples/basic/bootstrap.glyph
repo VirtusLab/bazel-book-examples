@@ -1,0 +1,2 @@
+module app.bootstrap
+message "hello from the bootstrap module"

@@ -1,0 +1,40 @@
+load("@bazel_skylib//rules:diff_test.bzl", "diff_test")
+load("@rules_shell//shell:sh_binary.bzl", "sh_binary")
+load("@stardoc//stardoc:stardoc.bzl", "stardoc")
+
+# Real API docs: Stardoc loads //glyph:defs.bzl and renders Markdown from the
+# rule/attr/provider/macro doc strings, so documentation is generated from the
+# declarations users actually load. The generated Markdown is then compared
+# against a checked-in golden (glyph_api.md) by the diff_test below, which is
+# what makes "docs drift shows up as a test failure" literally true: change a
+# doc string without regenerating and `bazel test //docs/...` goes red. This is
+# the stardoc_with_diff_test pattern from 4.5.4, written out explicitly.
+stardoc(
+    name = "glyph_api_docs",
+    out = "glyph_api_generated.md",
+    input = "//glyph:defs.bzl",
+    deps = ["//glyph:defs_bzl"],
+    visibility = ["//visibility:public"],
+)
+
+# The drift gate. If the committed golden and freshly generated docs differ, the
+# test fails and points at the refresh command.
+diff_test(
+    name = "glyph_api_docs_diff_test",
+    size = "small",
+    failure_message = "Stardoc output is stale. Refresh it with: bazel run //docs:update_glyph_api_docs",
+    file1 = "glyph_api.md",
+    file2 = ":glyph_api_generated.md",
+)
+
+# The refresh half of the pattern: copy freshly generated docs over the golden.
+# `bazel run` sets BUILD_WORKSPACE_DIRECTORY, so this writes back into the source
+# tree. Keeping the refresh a single obvious command is exactly what 4.5.4 asks
+# for so documentation never becomes the slowest part of a contribution.
+sh_binary(
+    name = "update_glyph_api_docs",
+    srcs = ["update_glyph_api_docs.sh"],
+    args = ["$(rootpath :glyph_api_generated.md)"],
+    data = [":glyph_api_generated.md"],
+    visibility = ["//visibility:public"],
+)

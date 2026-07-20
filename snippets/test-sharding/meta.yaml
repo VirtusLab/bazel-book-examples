@@ -1,0 +1,13 @@
+id: snippets/test-sharding
+title: Test Sharding Contract
+description: >-
+  Demonstrates a single Bazel test target split into three shard invocations,
+  exposing TEST_TOTAL_SHARDS and TEST_SHARD_INDEX and requiring the runner to
+  touch TEST_SHARD_STATUS_FILE.
+refs:
+  - "1.2.5:Sharding"
+commands:
+  - command: "bazel test //:sharded_test --test_output=all --cache_test_results=no"
+    expect: success
+    description: "Runs a sharded shell test and prints the shard index plus selected cases"
+bazel_version: "9.0.0"

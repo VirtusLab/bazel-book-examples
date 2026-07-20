@@ -1,0 +1,23 @@
+package(default_visibility = ["//visibility:public"])
+
+filegroup(
+    name = "portable",
+    srcs = ["portable.txt"],
+)
+
+filegroup(
+    name = "linux_only",
+    srcs = ["linux.txt"],
+    target_compatible_with = ["//platforms:demo_linux"],
+)
+
+filegroup(
+    name = "mac_only",
+    srcs = ["mac.txt"],
+    target_compatible_with = ["//platforms:demo_macos"],
+)
+
+filegroup(
+    name = "depends_on_mac_only",
+    srcs = [":mac_only"],
+)

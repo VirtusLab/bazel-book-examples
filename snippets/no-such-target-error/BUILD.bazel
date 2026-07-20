@@ -1,0 +1,4 @@
+alias(
+    name = "broken",
+    actual = "//lib:missing",
+)

@@ -1,0 +1,6 @@
+module app.core
+import app.api
+import stdlib.print
+resource examples/basic/runtime/greeting.txt
+message "hello from app.core"
+entry main

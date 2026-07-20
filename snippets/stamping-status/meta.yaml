@@ -1,0 +1,15 @@
+id: snippets/stamping-status
+title: Stamping Status
+description: >-
+  Measures action execution across stable-only, volatile-only, and ordinary
+  input changes for a custom rule that explicitly consumes both workspace-status
+  files.
+refs:
+  - "3.2.3:Stamping"
+  - "2.4:Caching"
+  - "5.2.3:StampingCacheImpact"
+commands:
+  - command: "bash tools/run_cache_experiment.sh"
+    expect: success
+    description: "Runs five controlled builds and verifies execution, reuse, invalidation, and volatile-value staleness from per-build execution logs."
+bazel_version: "9.0.0"

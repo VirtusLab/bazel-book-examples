@@ -1,0 +1,3 @@
+module errors.missing_import
+import stdlib.print
+message "this module never compiles: stdlib.print is imported but not in deps"

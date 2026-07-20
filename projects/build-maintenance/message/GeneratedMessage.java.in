@@ -1,0 +1,9 @@
+package message;
+
+public final class GeneratedMessage {
+    private GeneratedMessage() {}
+
+    public static String details() {
+        return "template=@TEMPLATE@ output_dir=@OUT_DIR@";
+    }
+}

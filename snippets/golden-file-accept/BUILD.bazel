@@ -1,0 +1,34 @@
+load("@rules_shell//shell:sh_binary.bzl", "sh_binary")
+load("@rules_shell//shell:sh_test.bzl", "sh_test")
+
+genrule(
+    name = "actual_report",
+    srcs = ["source.txt"],
+    outs = ["actual_report.txt"],
+    cmd = "tr '[:lower:]' '[:upper:]' < $(location source.txt) > $@",
+)
+
+sh_test(
+    name = "report_test",
+    srcs = ["verify.sh"],
+    size = "small",
+    args = [
+        "$(location :actual_report.txt)",
+        "$(location golden.txt)",
+    ],
+    data = [
+        ":actual_report.txt",
+        "golden.txt",
+    ],
+)
+
+sh_binary(
+    name = "report.accept",
+    srcs = ["accept.sh"],
+    args = [
+        "$(rlocationpath :actual_report.txt)",
+        "golden.txt",
+    ],
+    data = [":actual_report.txt"],
+    deps = ["@bazel_tools//tools/bash/runfiles"],
+)

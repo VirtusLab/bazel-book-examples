@@ -1,0 +1,36 @@
+package(default_visibility = ["//visibility:public"])
+
+# Execution platforms (not target platforms — those live in //examples/platforms).
+# They model the real pattern behind glyph_report's exec_group: a ruleset can
+# route a specific action to a dedicated worker pool while the rest of the build
+# runs elsewhere. Here the two pools differ only by a marker constraint so the
+# example stays runnable locally and on CI; on RBE the exec_properties below pick
+# the actual remote pool.
+
+constraint_setting(name = "glyph_worker_pool")
+
+constraint_value(
+    name = "general_pool",
+    constraint_setting = ":glyph_worker_pool",
+)
+
+constraint_value(
+    name = "report_pool",
+    constraint_setting = ":glyph_worker_pool",
+)
+
+# Both inherit the host's os/cpu via parents = @platforms//host, so toolchain
+# resolution (the py_binary compiler, C++ for tools, etc.) still works. They only
+# add the pool marker on top.
+platform(
+    name = "general_worker",
+    constraint_values = [":general_pool"],
+    parents = ["@platforms//host"],
+)
+
+platform(
+    name = "report_worker",
+    constraint_values = [":report_pool"],
+    exec_properties = {"Pool": "glyph-report"},
+    parents = ["@platforms//host"],
+)

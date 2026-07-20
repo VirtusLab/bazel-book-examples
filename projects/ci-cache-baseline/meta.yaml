@@ -1,0 +1,24 @@
+id: projects/ci-cache-baseline
+title: CI Cache Baseline
+description: >-
+  A minimal Bazel CI workspace with a named CI config, cache paths for Bazelisk,
+  repository downloads, and action results, plus a tiny test suite that makes
+  bazel test --config=ci //... meaningful.
+refs:
+  - "3.8.1:BuildMaintainableBazelWorkspace"
+  - "3.6.1:BasicCIRecipe"
+  - "3.6.2:ServerLifecycle"
+  - "3.6.3:CIFlags"
+  - "3.6.4:DiskCache"
+  - "3.6.5:SimpleRemoteCache"
+  - "3.6.6:CacheConsiderations"
+languages:
+  - shell
+commands:
+  - command: "bazel build --config=ci //..."
+    expect: success
+    description: "Builds the generated artifact, shell tests, and CI wrapper with the checked-in CI config."
+  - command: "bazel test --config=ci //..."
+    expect: success
+    description: "Runs the small test suite through the same named CI config used by the workflow."
+bazel_version: "9.0.0"

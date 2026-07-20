@@ -1,0 +1,13 @@
+load(":flags.bzl", "device_mode_flag")
+
+device_mode_flag(
+    name = "device_mode",
+    build_setting_default = False,
+)
+
+config_setting(
+    name = "device_enabled",
+    flag_values = {
+        "//config:device_mode": "true",
+    },
+)

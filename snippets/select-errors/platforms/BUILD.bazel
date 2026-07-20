@@ -1,0 +1,43 @@
+package(default_visibility = ["//visibility:public"])
+
+constraint_setting(name = "demo_os")
+
+constraint_value(
+    name = "demo_linux",
+    constraint_setting = ":demo_os",
+)
+
+constraint_value(
+    name = "demo_macos",
+    constraint_setting = ":demo_os",
+)
+
+constraint_value(
+    name = "demo_other",
+    constraint_setting = ":demo_os",
+)
+
+platform(
+    name = "linux",
+    constraint_values = [":demo_linux"],
+)
+
+platform(
+    name = "macos",
+    constraint_values = [":demo_macos"],
+)
+
+platform(
+    name = "other",
+    constraint_values = [":demo_other"],
+)
+
+config_setting(
+    name = "linux_target",
+    constraint_values = [":demo_linux"],
+)
+
+config_setting(
+    name = "macos_target",
+    constraint_values = [":demo_macos"],
+)

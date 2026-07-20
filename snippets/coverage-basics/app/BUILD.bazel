@@ -1,0 +1,15 @@
+load("@rules_java//java:defs.bzl", "java_library", "java_test")
+
+java_library(
+    name = "calculator",
+    srcs = ["Calculator.java"],
+)
+
+java_test(
+    name = "calculator_test",
+    srcs = ["CalculatorTest.java"],
+    main_class = "app.CalculatorTest",
+    deps = [":calculator"],
+    size = "small",
+    use_testrunner = False,
+)

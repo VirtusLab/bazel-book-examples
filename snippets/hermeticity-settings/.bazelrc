@@ -1,0 +1,7 @@
+common --color=yes
+common --curses=no
+
+# Hermeticity flags grouped under --config=strict so the snippet stays usable
+# without them and the meta.yaml commands can opt in explicitly.
+build:strict --action_env=DEMO_VALUE=fixed
+build:strict --sandbox_default_allow_network=false

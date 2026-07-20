@@ -1,0 +1,13 @@
+load("@bazel_skylib//:bzl_library.bzl", "bzl_library")
+
+package(default_visibility = ["//visibility:public"])
+
+bzl_library(
+    name = "transitions_bzl",
+    srcs = ["transitions.bzl"],
+    deps = [
+        "//glyph:providers_bzl",
+        "//glyph/internal:runfiles_bzl",
+        "//glyph/settings:settings_bzl",
+    ],
+)

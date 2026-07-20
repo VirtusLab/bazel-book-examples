@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+if [[ -z "${BAZEL_REAL:-}" ]]; then
+  echo "tools/bazel is meant to be invoked by Bazelisk so BAZEL_REAL is set." >&2
+  echo "Install Bazelisk or run the real Bazel binary directly for this sample." >&2
+  exit 2
+fi
+
+if [[ "${CI:-}" == "true" ]]; then
+  export BAZEL_MAINTAINER_SAMPLE_MODE=ci
+fi
+
+exec "$BAZEL_REAL" "$@"

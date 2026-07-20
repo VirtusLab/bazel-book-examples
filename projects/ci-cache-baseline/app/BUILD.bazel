@@ -1,0 +1,18 @@
+package(default_visibility = ["//visibility:public"])
+
+exports_files(["message.txt"])
+
+genrule(
+    name = "uppercase_message",
+    srcs = ["message.txt"],
+    outs = ["message.upper.txt"],
+    cmd = "tr '[:lower:]' '[:upper:]' < $< > $@",
+)
+
+filegroup(
+    name = "ci_inputs",
+    srcs = [
+        "message.txt",
+        ":uppercase_message",
+    ],
+)

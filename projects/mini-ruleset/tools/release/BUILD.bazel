@@ -1,0 +1,7 @@
+load("@rules_shell//shell:sh_binary.bzl", "sh_binary")
+
+sh_binary(
+    name = "print_release_plan",
+    srcs = ["print_release_plan.sh"],
+    visibility = ["//visibility:public"],
+)

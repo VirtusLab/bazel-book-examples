@@ -1,0 +1,4 @@
+module(
+    name = "vendored_dep",
+    version = "1.0.0",
+)

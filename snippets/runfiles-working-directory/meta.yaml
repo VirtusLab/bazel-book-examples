@@ -1,0 +1,15 @@
+id: snippets/runfiles-working-directory
+title: Runfiles Working Directory
+description: >-
+  Demonstrates that `bazel run` launches a non-test binary inside its
+  runfiles tree, exposes `BUILD_WORKING_DIRECTORY` and
+  `BUILD_WORKSPACE_DIRECTORY`, and resolves declared runtime files via
+  `$(rlocationpath ...)`.
+refs:
+  - "1.1.2:BazelRun"
+  - "0.3.3:Attributes"
+commands:
+  - command: "bazel run //app:inspect"
+    expect: success
+    description: "Prints the runtime cwd, BUILD_* variables, and the resolved data file path"
+bazel_version: "9.0.0"

@@ -1,0 +1,41 @@
+load("@rules_shell//shell:sh_binary.bzl", "sh_binary")
+
+package(default_visibility = ["//visibility:public"])
+
+# Inside Bazel's output boundary: a normal build action that produces a
+# declared file under bazel-out. Tagged so the query-driven workflow can
+# discover it without naming each release target individually.
+genrule(
+    name = "notes",
+    srcs = ["RELEASE_NOTES.md.in"],
+    outs = ["release_notes.txt"],
+    cmd = "printf '# Release notes (built by Bazel)\\n\\n' > $@ && cat $(location RELEASE_NOTES.md.in) >> $@",
+    tags = ["release"],
+)
+
+# Second declared output, also under bazel-out. Two release-tagged targets
+# make the query in tools/run_release_targets.sh meaningful.
+genrule(
+    name = "summary",
+    outs = ["release_summary.txt"],
+    cmd = "printf 'release_summary\\nartifact=release_notes.txt\\nstatus=ready\\n' > $@",
+    tags = ["release"],
+)
+
+# Around Bazel: this launcher takes the build artifact through runfiles and
+# writes it into BUILD_WORKSPACE_DIRECTORY/out/published/. That path is NOT a
+# declared Bazel output; it is the workspace mutation a maintainer asked for
+# explicitly with `bazel run`.
+sh_binary(
+    name = "notes.publish",
+    srcs = ["publish_notes.sh"],
+    args = [
+        "$(rlocationpath :notes)",
+        "$(rlocationpath :summary)",
+    ],
+    data = [
+        ":notes",
+        ":summary",
+    ],
+    deps = ["@bazel_tools//tools/bash/runfiles"],
+)

@@ -1,0 +1,14 @@
+id: snippets/toolchain-resolution-error
+title: No Matching Toolchains Error
+description: >-
+  Demonstrates analysis failing when a rule requires a mandatory
+  toolchain type but no matching toolchain is registered.
+refs:
+  - "1.1.10:CommonErrors"
+  - "4.6.2:ToolchainRequirementsAccess"
+  - "4.6.3:ToolchainResolution"
+commands:
+  - command: "bazel build //:demo"
+    expect: error
+    description: "Fails because the required toolchain type has no registered implementation."
+bazel_version: "9.0.0"

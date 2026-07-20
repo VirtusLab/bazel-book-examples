@@ -1,0 +1,8 @@
+load("@load_helper//:defs.bzl", "helper_marker")
+
+helper_marker(name = "helper_marker")
+
+filegroup(
+    name = "lightweight",
+    srcs = ["light.txt"],
+)

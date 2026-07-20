@@ -1,0 +1,19 @@
+load("//glyph:defs.bzl", "glyph_binary", "glyph_library")
+
+package(default_visibility = ["//visibility:public"])
+
+glyph_library(
+    name = "app",
+    srcs = ["app.glyph"],
+    module = "thirdparty.app",
+    deps = [
+        "@glyph_math//:lib",
+        "@glyph_stdlib//:lib",
+    ],
+)
+
+glyph_binary(
+    name = "uses_math",
+    deps = [":app"],
+    main_module = "thirdparty.app",
+)

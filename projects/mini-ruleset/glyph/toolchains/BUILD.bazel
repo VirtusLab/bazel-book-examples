@@ -1,0 +1,23 @@
+load("@bazel_skylib//:bzl_library.bzl", "bzl_library")
+load(":toolchain.bzl", "glyph_toolchain")
+
+package(default_visibility = ["//visibility:public"])
+
+toolchain_type(name = "glyph_toolchain_type")
+
+glyph_toolchain(
+    name = "source_toolchain_impl",
+    compiler = "//compiler:glyphc",
+    worker = "//glyph/worker:worker",
+)
+
+toolchain(
+    name = "source_toolchain",
+    toolchain = ":source_toolchain_impl",
+    toolchain_type = ":glyph_toolchain_type",
+)
+
+bzl_library(
+    name = "toolchain_bzl",
+    srcs = ["toolchain.bzl"],
+)

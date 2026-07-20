@@ -1,0 +1,31 @@
+id: snippets/genrule-sandbox-paths
+title: Genrule Sandbox Paths
+description: >-
+  Pins the genrule path-and-sandbox rules from 3.4.1:Genrule against three
+  targets in one BUILD file: a correct genrule that resolves every path through
+  Make variables ($(execpath), $(location), $(RULEDIR)), a broken genrule that
+  hard-codes a source-tree relative path and fails because the input is not
+  staged in the sandbox, and a broken genrule that references a tool via
+  $(execpath) without listing it in tools so analysis fails before any action
+  runs. `bazel aquery` exercises the action-graph view of the correct target.
+refs:
+  - "3.4.1:Genrule"
+  - "2.3:Hermeticity"
+  - "2.5.2:StrategyVocabulary"
+commands:
+  - command: "bazel build //config:generated_good"
+    expect: success
+    description: "Correct genrule. $(execpath :converter), $(location :input.txt), and $(RULEDIR) all resolve to sandbox-correct paths; the action stages the tool and the input, runs converter.sh, and writes to bazel-out/.../config/generated_good.txt."
+  - command: "bazel build --spawn_strategy=sandboxed --action_env=SANDBOX_REPRO=sandboxed //config:bad_relative_path"
+    expect: error
+    description: "Hard-codes 'config/input.txt' in cmd and omits srcs entirely. The explicit sandbox strategy does not stage the input, so `cat` fails. The fixed action-env value separates this expected failure from the successful local comparison's cache key."
+  - command: "bazel build --spawn_strategy=local --action_env=SANDBOX_REPRO=local //config:bad_relative_path"
+    expect: success
+    description: "The undeclared source-tree path happens to exist from the normal execroot. A distinct action-env value prevents this successful local result from satisfying the sandbox reproduction through the shared action cache."
+  - command: "bazel build //config:missing_tool_decl"
+    expect: error
+    description: "$(execpath :converter) is referenced in cmd but :converter is not declared in srcs/outs/tools. Make-variable resolution rejects the reference at analysis time, before any action runs."
+  - command: "bazel aquery //config:generated_good"
+    expect: success
+    description: "Action-graph view of the correct target. Lists the Genrule action with :converter and input.txt as inputs and bazel-out/.../config/generated_good.txt as the declared output, which is the data 3.4.1:Genrule's debugging section asks readers to confirm."
+bazel_version: "9.0.0"

@@ -1,0 +1,17 @@
+id: snippets/action-env-error
+title: Missing Action Environment Error
+description: >-
+  Demonstrates an action that fails when it assumes a host environment variable
+  is available, then fixes the action by passing a pinned value with --action_env.
+refs:
+  - "1.1.10:CommonErrors"
+  - "3.2.6:HermeticitySettings"
+  - "2.3:Hermeticity"
+commands:
+  - command: "bazel build //env:needs_env"
+    expect: error
+    description: "Fails because DEMO_TOKEN is not part of the action environment."
+  - command: "bazel build --action_env=DEMO_TOKEN=expected //env:needs_env"
+    expect: success
+    description: "Succeeds when the required variable is explicitly pinned into the action environment."
+bazel_version: "9.0.0"

@@ -1,0 +1,3 @@
+module(name = "vendor_mode")
+
+bazel_dep(name = "vendored_dep", version = "1.0.0")

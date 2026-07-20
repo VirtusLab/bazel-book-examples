@@ -1,0 +1,3 @@
+# Copy to user.bazelrc for local-only preferences. The workspace .bazelrc uses
+# try-import so this file is optional and should not be committed after copying.
+build --sandbox_debug

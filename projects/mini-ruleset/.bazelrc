@@ -1,0 +1,9 @@
+build --repo_env=BAZEL_DO_NOT_DETECT_CPP_TOOLCHAIN=1
+
+# Defense in depth: Protobuf 34 already prefers its official prebuilt compiler,
+# and the worker consumes checked-in gencode plus a wheel. If either boundary
+# regresses, fail the first Protobuf compile immediately instead of spending
+# minutes building the C++ graph before the validation script can report it.
+build --@protobuf//bazel/flags:prefer_prebuilt_protoc
+build --per_file_copt=external/.*protobuf.*@--RULES_GLYPH_FORBIDS_PROTOBUF_SOURCE_BUILD
+build --host_per_file_copt=external/.*protobuf.*@--RULES_GLYPH_FORBIDS_PROTOBUF_SOURCE_BUILD

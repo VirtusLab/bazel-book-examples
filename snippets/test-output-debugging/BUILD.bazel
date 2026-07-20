@@ -1,0 +1,19 @@
+load("@rules_shell//shell:sh_test.bzl", "sh_test")
+
+sh_test(
+    name = "pass_test",
+    srcs = ["pass_test.sh"],
+    size = "small",
+)
+
+sh_test(
+    name = "fail_test",
+    srcs = ["fail_test.sh"],
+    size = "small",
+)
+
+sh_test(
+    name = "run_number_test",
+    srcs = ["run_number_test.sh"],
+    size = "small",
+)

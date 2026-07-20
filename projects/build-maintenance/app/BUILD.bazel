@@ -1,0 +1,28 @@
+load("@rules_java//java:defs.bzl", "java_binary", "java_library", "java_test")
+
+package(default_visibility = ["//visibility:public"])
+
+java_library(
+    name = "app_lib",
+    srcs = ["MaintenanceApp.java"],
+    deps = [
+        "//logging:audit_log",
+        "//message:message",
+        "//unused:unused_helper",
+    ],
+)
+
+java_binary(
+    name = "maintenance_app",
+    main_class = "app.MaintenanceApp",
+    runtime_deps = [":app_lib"],
+)
+
+java_test(
+    name = "maintenance_app_test",
+    srcs = ["MaintenanceAppTest.java"],
+    main_class = "app.MaintenanceAppTest",
+    deps = [":app_lib"],
+    size = "small",
+    use_testrunner = False,
+)

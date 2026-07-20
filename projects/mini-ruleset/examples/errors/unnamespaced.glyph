@@ -1,0 +1,2 @@
+module broken
+message "compiles fine, but fails the _validation gate: module name has no namespace"

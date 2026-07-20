@@ -1,0 +1,25 @@
+id: snippets/hermeticity-settings
+title: Hermeticity Settings
+description: >-
+  Demonstrates the practical difference between an inherited shell
+  environment and an action environment pinned via `--action_env`, plus an
+  anchor target for the sandbox-network discussion. The env-var case is the
+  observable demo; the network target stays a no-op so validation is
+  deterministic across operating systems and execution strategies.
+refs:
+  - "3.2.6:HermeticitySettings"
+  - "2.3:Hermeticity"
+commands:
+  - command: "bazel test //env:print_env_test"
+    expect: success
+    description: "Without `--action_env=DEMO_VALUE=fixed`, the action env is the strict baseline (Bazel 9 default), so DEMO_VALUE is unset and `print_env` writes 'unset'."
+  - command: "bazel test --config=strict --test_env=EXPECTED_VALUE=fixed //env:print_env_test"
+    expect: success
+    description: "With `--config=strict` the workspace `.bazelrc` adds `--action_env=DEMO_VALUE=fixed`, so the genrule sees the pinned value and the test asserts 'fixed'."
+  - command: "bazel build //network:requires_network"
+    expect: success
+    description: "Builds the no-op anchor target with the default sandbox network policy."
+  - command: "bazel build --sandbox_default_allow_network=false //network:requires_network"
+    expect: success
+    description: "Same target with sandbox network access blocked; the no-op cmd does not touch the network, so the build succeeds and the flag is exercised without flakiness."
+bazel_version: "9.0.0"

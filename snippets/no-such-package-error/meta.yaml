@@ -1,0 +1,18 @@
+id: snippets/no-such-package-error
+title: No Such Package Error
+description: >-
+  Demonstrates loading/analysis failures when a label points at a package that
+  Bazel cannot resolve at all, including a local package path and an undeclared
+  external repository.
+refs:
+  - "1.1.10:CommonErrors"
+  - "0.1.3:Package"
+  - "3.1.1:Bzlmod"
+commands:
+  - command: "bazel build //:broken_local_package"
+    expect: error
+    description: "Fails because //missing is not a Bazel package in this workspace."
+  - command: "bazel build //:broken_external_repo"
+    expect: error
+    description: "Fails because @not_declared is not declared by MODULE.bazel."
+bazel_version: "9.0.0"

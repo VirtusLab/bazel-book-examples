@@ -1,0 +1,18 @@
+load("@rules_java//java:defs.bzl", "java_library")
+
+package(default_visibility = ["//visibility:public"])
+
+genrule(
+    name = "generate_message",
+    srcs = ["GeneratedMessage.java.in"],
+    outs = ["GeneratedMessage.java"],
+    cmd = "sed -e 's|@TEMPLATE@|$(location GeneratedMessage.java.in)|g' -e 's|@OUT_DIR@|$(@D)|g' $< > $@",
+)
+
+java_library(
+    name = "message",
+    srcs = [
+        "MessageTemplate.java",
+        ":generate_message",
+    ],
+)

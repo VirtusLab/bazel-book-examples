@@ -1,0 +1,8 @@
+load(":versioned.bzl", "versioned_info")
+
+package(default_visibility = ["//visibility:public"])
+
+versioned_info(
+    name = "versioned",
+    src = "payload.txt",
+)

@@ -1,0 +1,29 @@
+id: snippets/select-errors
+title: Select Error Patterns
+description: >-
+  Demonstrates configurable-attribute failures, no_match_error output,
+  macro phase-boundary mistakes, and the query/cquery difference for select().
+refs:
+  - "3.3.1:Select"
+  - "4.3.2:MacroExpansion"
+  - "5.1.2:Cquery"
+commands:
+  - command: "bazel build //app:missing_default --platforms=//platforms:other"
+    expect: error
+    description: "Fails because the select() has no branch for //platforms:other and no default."
+  - command: "bazel build //app:missing_default_custom --platforms=//platforms:other"
+    expect: error
+    description: "Fails with the custom no_match_error message for the unmatched platform."
+  - command: "bazel build //app:macro_select_error"
+    expect: error
+    description: "Shows a legacy macro making a loading-phase decision before select() is resolved."
+  - command: "bazel query 'deps(//app:server)'"
+    expect: success
+    description: "Shows the loading-phase dependency shape, including all select() branches."
+  - command: "bazel query --output=build //app:macro_select_error"
+    expect: success
+    description: "Shows the concrete genrule emitted by the legacy macro, including generator metadata and instantiation trace."
+  - command: "bazel cquery 'deps(//app:server)' --platforms=//platforms:linux"
+    expect: success
+    description: "Shows the configured dependency graph after the linux branch is selected."
+bazel_version: "9.0.0"

@@ -1,0 +1,22 @@
+id: snippets/local-registry-chain
+title: Local Registry Chain
+description: >-
+  Shows the minimal shape of a local index registry and the repeatable
+  --registry flag. The first registry is a file:// tree with a local_path
+  module entry; the public BCR URL is present only as a fallback and is not
+  needed for this self-contained module.
+refs:
+  - "3.1.6:BCRInfrastructure"
+  - "3.1.8:RegistryStructure"
+  - "3.1.9:OfflineBuilds"
+commands:
+  - command: "bazel mod graph --registry=file://$PWD/registry --registry=https://bcr.bazel.build"
+    expect: success
+    description: "Resolves the local-only registry_dep@1.0.0 with the local index registry first and the BCR URL configured as an explicit fallback."
+  - command: "bazel build --registry=file://$PWD/registry --registry=https://bcr.bazel.build //app:uses_registry_dep"
+    expect: success
+    description: "Builds a target whose source file comes from the module resolved through the local registry."
+  - command: "python3 tools/assert_registry_chain.py"
+    expect: success
+    description: "Asserts that mod graph sees the local-only registry_dep@1.0.0 and that its target builds with BCR configured as a fallback."
+bazel_version: "9.0.0"

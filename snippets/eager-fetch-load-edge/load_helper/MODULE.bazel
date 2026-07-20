@@ -1,0 +1,4 @@
+module(
+    name = "load_helper",
+    version = "0.0.0",
+)

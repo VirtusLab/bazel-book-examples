@@ -1,0 +1,9 @@
+alias(
+    name = "broken_local_package",
+    actual = "//missing:dep",
+)
+
+alias(
+    name = "broken_external_repo",
+    actual = "@not_declared//:dep",
+)

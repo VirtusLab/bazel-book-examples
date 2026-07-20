@@ -1,0 +1,109 @@
+module(
+    name = "rules_glyph",
+    bazel_compatibility = [">=9.0.0"],
+)
+
+bazel_dep(name = "platforms", version = "1.1.0")
+bazel_dep(name = "llvm", version = "0.8.11")
+
+llvm_toolchain = use_extension("@llvm//extensions:toolchain.bzl", "toolchain")
+llvm_toolchain.exec(
+    arch = "x86_64",
+    os = "linux",
+)
+llvm_toolchain.exec(
+    arch = "aarch64",
+    os = "linux",
+)
+llvm_toolchain.exec(
+    arch = "x86_64",
+    os = "macos",
+)
+llvm_toolchain.exec(
+    arch = "aarch64",
+    os = "macos",
+)
+llvm_toolchain.target(
+    arch = "x86_64",
+    os = "linux",
+)
+llvm_toolchain.target(
+    arch = "aarch64",
+    os = "linux",
+)
+llvm_toolchain.target(
+    arch = "x86_64",
+    os = "macos",
+)
+llvm_toolchain.target(
+    arch = "aarch64",
+    os = "macos",
+)
+use_repo(llvm_toolchain, "llvm_toolchains")
+
+register_toolchains("@llvm_toolchains//:all")
+
+# Runtime dependency: the registered Glyph toolchain builds the compiler and
+# worker as py_binary targets.
+bazel_dep(name = "rules_python", version = "2.2.0")
+
+# This version is scoped to the private worker. A non-root module may contribute
+# a versioned toolchain, but rules_python only lets the root module (or its own
+# soft default) choose the consumer's default Python version.
+PYTHON_VERSION = "3.13"
+
+python = use_extension("@rules_python//python/extensions:python.bzl", "python")
+python.toolchain(python_version = PYTHON_VERSION)
+
+pip = use_extension("@rules_python//python/extensions:pip.bzl", "pip")
+pip.parse(
+    download_only = True,
+    experimental_index_url = "https://pypi.org/simple",
+    # Extension hub names are global across the module graph. Keep the worker's
+    # runtime private so a consumer remains free to own the conventional @pip.
+    hub_name = "rules_glyph_pip",
+    python_version = PYTHON_VERSION,
+    requirements_lock = "//:requirements_lock.txt",
+)
+use_repo(pip, "rules_glyph_pip")
+
+# Maintainer-only: the shipped worker uses checked-in protoc output plus the
+# release wheel above, so its graph does not analyze or compile Protobuf sources.
+# This dev dependency only powers the drift-check regeneration target, whose
+# compiler resolves to Protobuf 34's official prebuilt protoc toolchain.
+bazel_dep(name = "protobuf", version = "34.1", dev_dependency = True)
+
+# Runtime dependency: public ruleset packages declare bzl_library targets so
+# Stardoc can model their load graph. Loading those BUILD files as a non-root
+# module therefore needs bazel_skylib even when docs/tests are not requested.
+bazel_dep(name = "bazel_skylib", version = "1.9.0")
+
+# Dev-only: docs generation and shell binary/test targets are not part of the
+# downstream ruleset contract. Analysis tests use bazel_skylib above, but remain
+# development targets rather than a reason to classify the dependency as dev-only.
+bazel_dep(name = "rules_shell", version = "0.6.1", dev_dependency = True)
+bazel_dep(name = "stardoc", version = "0.8.1", dev_dependency = True)
+
+register_toolchains("//glyph/toolchains:source_toolchain")
+
+# Root-only demo execution platforms. general_worker is registered first, so
+# unconstrained actions land there; glyph_report requires report_pool and lands
+# on report_worker. dev_dependency prevents this teaching repo from imposing its
+# scheduling policy when consumed as a dependency. A downstream root that uses
+# glyph_report must register its own compatible platform.
+register_execution_platforms(
+    "//platforms:general_worker",
+    "//platforms:report_worker",
+    dev_dependency = True,
+)
+
+glyph = use_extension("//glyph:extensions.bzl", "glyph_deps")
+glyph.module(
+    name = "stdlib",
+    version = "1.0.0",
+)
+glyph.module(
+    name = "math",
+    version = "1.0.0",
+)
+use_repo(glyph, "glyph_math", "glyph_stdlib")

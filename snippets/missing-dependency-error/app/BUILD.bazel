@@ -1,0 +1,14 @@
+load("@rules_java//java:defs.bzl", "java_binary")
+
+java_binary(
+    name = "server_missing_dep",
+    srcs = ["Main.java"],
+    main_class = "app.Main",
+)
+
+java_binary(
+    name = "server_fixed",
+    srcs = ["Main.java"],
+    main_class = "app.Main",
+    deps = ["//lib:helper"],
+)

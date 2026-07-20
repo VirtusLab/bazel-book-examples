@@ -1,0 +1,14 @@
+id: snippets/coverage-basics
+title: Coverage Basics
+description: >-
+  Demonstrates bazel coverage on a small Java test target and produces a
+  merged LCOV report for inspection.
+refs:
+  - "1.2.8:Coverage"
+  - "T9.1:BazelCoverageBasics"
+commands:
+  - command: "bazel coverage //app:calculator_test --combined_report=lcov --java_runtime_version=remotejdk_21"
+    expect: success
+    description: "Runs one Java test with coverage instrumentation and writes a merged LCOV report"
+rules_java_version: "9.0.3"
+bazel_version: "9.0.0"

@@ -1,0 +1,31 @@
+package(default_visibility = ["//visibility:public"])
+
+constraint_setting(name = "glyph_os")
+
+constraint_value(
+    name = "glyph_linux",
+    constraint_setting = ":glyph_os",
+)
+
+constraint_value(
+    name = "glyph_macos",
+    constraint_setting = ":glyph_os",
+)
+
+platform(
+    name = "linux",
+    constraint_values = [
+        "@platforms//os:linux",
+        ":glyph_linux",
+    ],
+    flags = ["--//glyph/settings:target_os=linux"],
+)
+
+platform(
+    name = "macos",
+    constraint_values = [
+        "@platforms//os:macos",
+        ":glyph_macos",
+    ],
+    flags = ["--//glyph/settings:target_os=macos"],
+)

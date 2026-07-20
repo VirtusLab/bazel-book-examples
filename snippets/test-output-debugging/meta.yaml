@@ -1,0 +1,23 @@
+id: snippets/test-output-debugging
+title: Test Output and Debugging Flags
+description: >-
+  Demonstrates where Bazel stores test logs, how terminal output changes with
+  --test_output, and how --runs_per_test exposes the current rerun number to
+  the test process.
+refs:
+  - "1.2.1:TestCaching"
+  - "1.2.7:TestOutput"
+commands:
+  - command: "bazel test //:fail_test"
+    expect: error
+    description: "Shows the default terminal behavior for a failing test and points to test.log"
+  - command: "bazel test //:pass_test --test_output=all"
+    expect: success
+    description: "Prints stdout and stderr from a passing test in the terminal"
+  - command: "bazel test //:pass_test --test_output=streamed --cache_test_results=no"
+    expect: success
+    description: "Streams stdout and stderr live and shows Bazel's warning about serial execution"
+  - command: "bazel test //:run_number_test --runs_per_test=3 --test_output=all"
+    expect: success
+    description: "Shows that Bazel re-executes the test and sets TEST_RUN_NUMBER on each run"
+bazel_version: "9.0.0"

@@ -1,0 +1,2 @@
+module app.bootstrap_worker
+message "hello from the worker bootstrap module"

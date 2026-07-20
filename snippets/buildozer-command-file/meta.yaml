@@ -1,0 +1,23 @@
+id: snippets/buildozer-command-file
+title: Buildozer Command File
+description: >-
+  Shows Buildozer as a structured BUILD editor by generating a reviewable
+  command file that includes single-target, kind-filtered, package-wide, and
+  package pseudo-target forms.
+refs:
+  - "3.4.3:Buildozer"
+  - "3.4.5:UnusedDeps"
+commands:
+  - command: "bazel build //lib:core"
+    expect: success
+    description: "Builds the deps-capable target that the command file edits."
+  - command: "bazel run //lib:core"
+    expect: success
+    description: "Runs the edited target shape so the example proves it is not only syntactically buildable."
+  - command: "bazel run //tools:write_buildozer_cmds"
+    expect: success
+    description: "Writes buildozer-cmds.txt with reviewable edits."
+  - command: "bash tools/assert_buildozer_cmds.sh"
+    expect: success
+    description: "Checks the generated command file contains target forms used by the Buildozer article."
+bazel_version: "9.0.0"

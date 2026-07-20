@@ -1,0 +1,19 @@
+load("@bazel_skylib//:bzl_library.bzl", "bzl_library")
+
+package(default_visibility = ["//visibility:public"])
+
+bzl_library(
+    name = "runfiles_bzl",
+    srcs = ["runfiles.bzl"],
+)
+
+bzl_library(
+    name = "rules_bzl",
+    srcs = ["rules.bzl"],
+    deps = [
+        ":runfiles_bzl",
+        "//glyph:providers_bzl",
+        "//glyph/settings:settings_bzl",
+        "//glyph/toolchains:toolchain_bzl",
+    ],
+)

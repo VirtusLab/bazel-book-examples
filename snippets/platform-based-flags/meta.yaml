@@ -1,0 +1,18 @@
+id: snippets/platform-based-flags
+title: Platform-Based Flags
+description: >-
+  Demonstrates that a platform() target can carry Starlark build-setting values
+  through flags = [...], and that a child platform can override a parent
+  platform's flag value.
+refs:
+  - "4.7.5:PlatformBasedFlags"
+  - "4.7.1:BuildSettingsForRuleAuthors"
+  - "3.3.5:PlatformsFlag"
+commands:
+  - command: "bazel build --platforms=//platforms:parent //app:selected_file && grep -qx host bazel-bin/app/selected.txt"
+    expect: success
+    description: "The parent platform sets //config:device_mode=false, so the genrule copies host.txt."
+  - command: "bazel build --platforms=//platforms:device //app:selected_file && grep -qx device bazel-bin/app/selected.txt"
+    expect: success
+    description: "The child platform overrides the parent flag with //config:device_mode=true, so the genrule copies device.txt."
+bazel_version: "9.0.0"

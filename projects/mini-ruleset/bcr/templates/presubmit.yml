@@ -1,0 +1,16 @@
+matrix:
+  platform:
+    - debian10
+  bazel:
+    - 9.x
+tasks:
+  verify_targets:
+    name: Verify rules_glyph examples
+    platform: ${{ platform }}
+    bazel: ${{ bazel }}
+    build_targets:
+      - "@rules_glyph//examples/basic:hello"
+      - "@rules_glyph//examples/third_party:uses_math"
+    test_targets:
+      - "@rules_glyph//examples/basic:hello_test"
+      - "@rules_glyph//examples/basic:runtime_data_test"

@@ -1,0 +1,22 @@
+id: snippets/bazelrc-layering
+title: Bazelrc Layering and Announce
+description: >-
+  Pins rc-file precedence and named-config expansion in a workspace small
+  enough to inspect by hand. The `.bazelrc` defines a `--config=ci` named
+  config plus a `try-import %workspace%/user.bazelrc` line, and the commands
+  exercise --announce_rc, --ignore_all_rc_files, and the named-config
+  override path.
+refs:
+  - "3.2.1:BazelrcHierarchy"
+  - "3.6.3:CIFlags"
+commands:
+  - command: "bazel build --announce_rc --config=ci //app:app"
+    expect: success
+    description: "Builds //app:app with --config=ci and prints the rc files Bazel loaded plus the options each contributed; the 'common' line and the build:ci/test:ci block are reported under the workspace .bazelrc."
+  - command: "bazel --ignore_all_rc_files build //app:app"
+    expect: success
+    description: "Clean-room invocation that skips every rc file (system, workspace, home, BAZELRC, --bazelrc). --ignore_all_rc_files is a startup option, so it sits before the command. --config=ci is unavailable here because nothing defines it without the workspace .bazelrc."
+  - command: "bash tools/assert_announce_rc.sh"
+    expect: success
+    description: "Captures the --announce_rc output and asserts it mentions the workspace .bazelrc path, pinning the behavior 3.2.1 and 3.6.3 quote."
+bazel_version: "9.0.0"

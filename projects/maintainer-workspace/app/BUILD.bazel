@@ -1,0 +1,53 @@
+load("@rules_java//java:defs.bzl", "java_binary", "java_library", "java_test")
+
+package(default_visibility = ["//visibility:public"])
+
+config_setting(
+    name = "release_build",
+    values = {"compilation_mode": "opt"},
+)
+
+java_library(
+    name = "app_core",
+    srcs = [
+        "MaintainerApp.java",
+    ] + select({
+        "//platforms:linux_target": ["linux/PlatformProfile.java"],
+        "//platforms:macos_target": ["macos/PlatformProfile.java"],
+        "//conditions:default": ["generic/PlatformProfile.java"],
+    }),
+)
+
+java_binary(
+    name = "maintainer_app",
+    main_class = "app.MaintainerApp",
+    args = select({
+        ":release_build": ["release"],
+        "//conditions:default": ["dev"],
+    }) + ["$(rlocationpath @release_policy//:policy.txt)"],
+    data = ["@release_policy//:policy.txt"],
+    runtime_deps = [":app_core"],
+)
+
+java_test(
+    name = "app_core_test",
+    srcs = ["MaintainerAppTest.java"],
+    main_class = "app.MaintainerAppTest",
+    deps = [":app_core"],
+    size = "small",
+    use_testrunner = False,
+)
+
+java_binary(
+    name = "linux_admin_tool",
+    srcs = ["LinuxAdminTool.java"],
+    main_class = "app.LinuxAdminTool",
+    target_compatible_with = ["@platforms//os:linux"],
+)
+
+java_binary(
+    name = "macos_admin_tool",
+    srcs = ["MacosAdminTool.java"],
+    main_class = "app.MacosAdminTool",
+    target_compatible_with = ["@platforms//os:macos"],
+)

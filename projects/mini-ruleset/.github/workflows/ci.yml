@@ -1,0 +1,65 @@
+name: rules_glyph CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Test ruleset
+        run: bazel test //...
+      - name: Verify in-repo examples
+        run: |
+          set -euo pipefail
+
+          # examples/ is the consumer-facing surface inside the ruleset repo:
+          # keep the documented paths green before articles link to them.
+          bazel build //examples/basic:hello
+          bazel test //examples/basic:hello_test //examples/basic:runtime_data_test
+          bazel build //examples/third_party:uses_math
+
+          # Optional surfaces that users request explicitly.
+          bazel build //examples/basic:module_report --output_groups=glyph_report
+          bazel build //examples/basic:core --output_groups=_validation
+          bazel build //examples/basic:core --output_groups=glyph_manifest
+          bazel build //examples/basic:core --output_groups=glyph_manifests
+      - name: Verify advanced examples
+        run: |
+          set -euo pipefail
+
+          # Use targets not built by the preceding steps. Changing only the
+          # strategy does not change an action key, so rebuilding :hello here
+          # could be a cache hit and would prove neither execution path.
+          bazel build //examples/basic:macro_hello --strategy=GlyphCompile=worker
+          bazel build //examples/basic:legacy_hello --strategy=GlyphCompile=local
+          bazel run //examples/basic:hello_debug
+          bazel build //examples/basic:module_report_debug
+          bazel build //examples/basic:hello_split_report
+          bazel build //examples/basic:metadata \
+            --aspects=//tools/aspects:glyph_metadata_aspect.bzl%glyph_metadata_aspect \
+            --output_groups=glyph_metadata
+      - name: Verify documented failures
+        run: |
+          set -euo pipefail
+
+          expect_failure() {
+            if bazel build "$@"; then
+              echo "Expected failure, but command succeeded: bazel build $*" >&2
+              exit 1
+            fi
+          }
+
+          expect_failure //examples/basic:hello_linux_only
+          expect_failure //examples/errors:missing_import
+          expect_failure //examples/errors:missing_resource
+          expect_failure //examples/errors:unnamespaced
+      - name: Verify generated docs
+        run: |
+          set -euo pipefail
+
+          bazel build //docs:glyph_api_docs
+          bazel test //docs:glyph_api_docs_diff_test

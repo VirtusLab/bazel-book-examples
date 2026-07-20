@@ -1,0 +1,13 @@
+id: snippets/no-such-target-error
+title: No Such Target Error
+description: >-
+  Demonstrates the analysis-phase error when a label points at a package
+  that exists, but the requested target name is not declared there.
+refs:
+  - "1.1.10:CommonErrors"
+  - "0.2.1:CanonicalLabel"
+commands:
+  - command: "bazel build //:broken"
+    expect: error
+    description: "Fails because //lib exists, but target :missing is not declared."
+bazel_version: "9.0.0"

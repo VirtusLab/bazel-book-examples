@@ -1,0 +1,25 @@
+load("@rules_shell//shell:sh_binary.bzl", "sh_binary")
+
+package(default_visibility = ["//visibility:public"])
+
+sh_binary(
+    name = "service_probe",
+    srcs = ["service_probe.sh"],
+    args = select({
+        "//platforms:linux_target": ["$(rlocationpath :linux_service.conf)"],
+        "//platforms:macos_target": ["$(rlocationpath :macos_service.conf)"],
+        "//conditions:default": ["$(rlocationpath :generic_service.conf)"],
+    }),
+    data = select({
+        "//platforms:linux_target": ["linux_service.conf"],
+        "//platforms:macos_target": ["macos_service.conf"],
+        "//conditions:default": ["generic_service.conf"],
+    }),
+    deps = ["@bazel_tools//tools/bash/runfiles"],
+)
+
+sh_binary(
+    name = "linux_admin_bundle",
+    srcs = ["admin_bundle.sh"],
+    data = ["//app:linux_admin_tool"],
+)

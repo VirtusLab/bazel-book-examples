@@ -1,0 +1,5 @@
+## What changed
+
+- Updated build rules to use `rules_shell` 0.6.1.
+- Added `release` tag for query-driven release target collection.
+- Added `.publish` launcher for explicit, side-effecting deploys.

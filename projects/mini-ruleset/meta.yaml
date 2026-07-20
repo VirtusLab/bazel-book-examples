@@ -1,0 +1,141 @@
+id: projects/mini-ruleset
+title: Mini Ruleset
+description: >-
+  A complete teaching ruleset for the fictional compiled Glyph language:
+  custom rules, providers, actions, toolchains, build settings, transitions,
+  exports-style dependency APIs, runtime data/runfiles, aspects, module
+  extensions, examples, tests, docs, and release scaffolding.
+refs:
+  - "4.1.1:MacroVsRule"
+  - "4.1.2:LegacyMacros"
+  - "4.1.3:SymbolicMacros"
+  - "4.1.5:Depset"
+  - "4.2:CustomRules"
+  - "4.2.1:RuleFunction"
+  - "4.2.2:Actions"
+  - "4.2.3:ArgsCommandLines"
+  - "4.2.4:ErrorHandling"
+  - "4.2.5:DefaultInfo"
+  - "4.2.6:ExecutableTestRules"
+  - "4.2.7:CustomProviders"
+  - "4.2.8:ProviderAsInterface"
+  - "4.2.9:OutputGroupInfo"
+  - "4.4:ProductionRuleSurface"
+  - "4.4.2:RunEnvironmentInfo"
+  - "4.4.3:ActionExecutionContract"
+  - "4.4.4:PersistentWorkersForRuleAuthors"
+  - "4.5:RuleTestingDocumentation"
+  - "4.5.1:AnalysisTest"
+  - "4.5.3:ExampleWorkspaces"
+  - "4.5.4:Stardoc"
+  - "4.6:PlatformsToolchains"
+  - "4.6.1:PlatformModelForRuleAuthors"
+  - "4.6.2:ToolchainRequirementsAccess"
+  - "4.6.3:ToolchainResolution"
+  - "4.6.5:ExecutionGroups"
+  - "4.6.7:IncompatiblePlatformProvider"
+  - "4.7:BuildSettingsTransitions"
+  - "4.7.2:StarlarkTransitions"
+  - "4.8:Aspects"
+  - "4.8.1:AspectConcept"
+  - "4.8.2:AspectImplementation"
+  - "4.8.3:ValidationVsAspects"
+  - "4.9:RepositoryRules"
+  - "4.9.4:RepositoryRuleAPI"
+  - "4.10:ModuleExtensions"
+  - "4.10.2:ImplementationFunction"
+  - "4.11:RulesetPublishing"
+  - "4.11.4:PublishingRulesets"
+  - "4.13.1:BuildRulesetEndToEnd"
+  - "4.11.2:Toolchainization"
+  - ref: "5.1.3:Aquery"
+    value: high
+    notes: "The GlyphReport action and the checked-in aquery commands demonstrate filtering by mnemonic and inspecting the generated action contract for concrete targets."
+languages:
+  - bazel
+  - python
+  - shell
+commands:
+  - command: "bazel build //examples/basic:bootstrap"
+    expect: success
+    description: "Builds the dependency-free target used while the walkthrough evolves the temporary rule shell into the production GlyphCompile action."
+  - command: "bazel build //examples/basic:bootstrap_worker --strategy=GlyphCompile=worker"
+    expect: success
+    description: "Builds a distinct dependency-free target through the registered Glyph toolchain and worker adapter, guaranteeing a worker-side GlyphCompile cache miss after the ordinary bootstrap checkpoint."
+  - command: "bazel build //examples/basic:core"
+    expect: success
+    description: "Builds the finished transitive library graph after the bootstrap rule has grown deps, exports, resources, manifests, validation, and the compiler toolchain."
+  - command: "tools/validation/assert_prebuilt_protobuf.sh"
+    expect: success
+    description: "Analyzes the representative consumer and maintainer regeneration graphs before executing anything; rejects every Protobuf C++ compile action, then proves official prebuilt protoc regeneration, checked-in gencode freshness, and the private wheel runtime."
+  - command: "bazel build //examples/basic:hello"
+    expect: success
+    description: "Builds a Glyph binary through custom rules and the source-built compiler toolchain."
+  - command: "bazel test //compiler:glyphc_test //examples/basic:hello_test //examples/basic:runtime_data_test //tests/analysis:glyph_analysis_test //tests/integration:basic_smoke_test"
+    expect: success
+    description: "Runs the compiler unit test, public custom-rule tests, analysis-contract tests, and a downstream-style integration smoke test, including runtime data propagation."
+  - command: "bazel build //examples/third_party:uses_math"
+    expect: success
+    description: "Builds a target that depends on module-extension-generated external Glyph package repos."
+  - command: "bazel build //examples/basic:macro_hello --strategy=GlyphCompile=worker"
+    expect: success
+    description: "Compiles a previously unbuilt Glyph target through the ruleset's protobuf persistent-worker adapter, which wraps the one-command compiler CLI and stays warm across actions."
+  - command: "bazel build //examples/basic:legacy_hello --strategy=GlyphCompile=local"
+    expect: success
+    description: "Builds a previously unbuilt target with the same worker adapter in one-shot local mode, proving it works as a normal action wrapper without worker mode."
+  - command: "bazel build //examples/basic:module_report --output_groups=glyph_report"
+    expect: success
+    description: "Builds a report action routed through an exec_group pinned to the report_worker execution platform."
+  - command: "bazel aquery 'mnemonic(\"GlyphReport\", //examples/basic:bootstrap_report)'"
+    expect: success
+    description: "Shows the stage-4 report action over the dependency-free bootstrap library scheduled on the root-only //platforms:report_worker demo platform."
+  - command: "bazel aquery 'mnemonic(\"GlyphReport\", //examples/basic:module_report)'"
+    expect: success
+    description: "Shows that the GlyphReport action is scheduled on //platforms:report_worker with its dedicated worker-pool execution property."
+  - command: "bazel build //examples/basic:metadata --aspects=//tools/aspects:glyph_metadata_aspect.bzl%glyph_metadata_aspect --output_groups=glyph_metadata"
+    expect: success
+    description: "Applies a command-line aspect over the Glyph dependency graph."
+  - command: "bazel build //examples/basic:bootstrap --aspects=//tools/aspects:glyph_metadata_aspect.bzl%glyph_metadata_aspect --output_groups=glyph_metadata"
+    expect: success
+    description: "Applies the stage-6 aspect to the dependency-free bootstrap library before the module extension introduces external repositories."
+  - command: "bazel run //examples/basic:hello_debug"
+    expect: success
+    description: "Runs a binary behind a 1:1 outgoing debug transition (mode=debug); the transition flips //glyph/settings:mode, a config_setting reads it, and a select() on the binary's deps links an extra debug-only module that prints 'debug probe active' — the transition/select() dual."
+  - command: "bazel build //examples/basic:module_report_debug"
+    expect: success
+    description: "Builds a report through an incoming rule-level transition (rule(cfg=...)); the target is analyzed under mode=debug with no command-line flag, and the generated report records mode=debug."
+  - command: "bazel build //examples/basic:hello_split_report && cat bazel-bin/examples/basic/hello_split_report.split.txt"
+    expect: success
+    timeout_seconds: 1800
+    description: "Builds and prints a split-transition report showing the per-branch target_os configured value."
+  - command: "bazel build //examples/basic:core --output_groups=_validation"
+    expect: success
+    description: "Runs the execution-phase validation action and requests its _validation output marker."
+  - command: "bazel build //examples/basic:core --output_groups=glyph_manifest"
+    expect: success
+    description: "Materializes only this target's direct compile manifest through the glyph_manifest output group — the direct-vs-transitive contrast with glyph_manifests below."
+  - command: "bazel build //examples/basic:core --output_groups=glyph_manifests"
+    expect: success
+    description: "Materializes the transitive compile manifests through the glyph_manifests output group, proving GlyphInfo.manifests is a real rollup across deps/exports rather than dead state."
+  - command: "bazel build //examples/basic:hello_linux_only"
+    expect: error
+    description: "Target declares target_compatible_with the custom glyph_linux constraint; the host platform never sets it, so Bazel marks it incompatible (IncompatiblePlatformProvider) and refuses to build it by name."
+  - command: "bazel build //examples/errors:missing_import"
+    expect: error
+    description: "Compile-time contract failure: the source imports a module that is not in deps, so the GlyphCompile action exits non-zero."
+  - command: "bazel build //examples/errors:missing_resource"
+    expect: error
+    description: "Compile-time contract failure: the source declares a resource that is not in data, so the GlyphCompile action exits non-zero."
+  - command: "bazel build //examples/errors:unnamespaced"
+    expect: error
+    description: "The library compiles, but the auto-run _validation action rejects the non-namespaced module name — the rule-owned gate every consumer inherits."
+  - command: "bazel build //docs:glyph_api_docs"
+    expect: success
+    description: "Generates Markdown API docs with a real Stardoc target over glyph/defs.bzl."
+  - command: "bazel test //docs:glyph_api_docs_diff_test"
+    expect: success
+    description: "Diffs freshly generated Stardoc output against the checked-in golden docs/glyph_api.md, so a doc-string change that is not regenerated fails the build instead of going stale (the stardoc_with_diff_test pattern)."
+  - command: "bazel run //tools/release:print_release_plan"
+    expect: success
+    description: "Prints the release/BCR checklist a real ruleset would automate."
+bazel_version: "9.0.0"

@@ -1,0 +1,5 @@
+print rule|//lib:core
+add deps //base:logging|//lib:core
+print rule|//lib:*
+remove srcs extra.txt|//lib:%filegroup
+set default_visibility //visibility:public|//lib:__pkg__

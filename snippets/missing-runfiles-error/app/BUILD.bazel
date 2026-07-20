@@ -1,0 +1,16 @@
+load("@rules_shell//shell:sh_binary.bzl", "sh_binary")
+
+sh_binary(
+    name = "broken_reader",
+    srcs = ["read_message.sh"],
+    args = ["_main/app/message.txt"],
+    deps = ["@bazel_tools//tools/bash/runfiles"],
+)
+
+sh_binary(
+    name = "fixed_reader",
+    srcs = ["read_message.sh"],
+    args = ["$(rlocationpath //app:message.txt)"],
+    data = ["message.txt"],
+    deps = ["@bazel_tools//tools/bash/runfiles"],
+)

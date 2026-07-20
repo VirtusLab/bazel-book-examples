@@ -1,0 +1,13 @@
+load(":defs.bzl", "arch_dep", "cpu_setting", "split_key_probe")
+
+cpu_setting(
+    name = "cpu_setting",
+    build_setting_default = "default",
+)
+
+arch_dep(name = "dep")
+
+split_key_probe(
+    name = "probe",
+    dep = ":dep",
+)

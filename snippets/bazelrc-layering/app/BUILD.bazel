@@ -1,0 +1,9 @@
+package(default_visibility = ["//visibility:public"])
+
+# Trivial target so commands like `bazel build --config=ci //app:app` resolve.
+# The point of this snippet is rc-file precedence and --announce_rc, not the
+# target itself.
+filegroup(
+    name = "app",
+    srcs = [],
+)

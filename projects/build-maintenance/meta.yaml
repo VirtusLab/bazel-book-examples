@@ -1,0 +1,39 @@
+id: projects/build-maintenance
+title: Build Maintenance Workflow
+description: >-
+  A small Java workspace that demonstrates maintained BUILD deps, a generated
+  source target, and reviewable buildifier, Gazelle, buildozer, and unused-deps
+  maintenance workflows.
+refs:
+  - "3.8.1:BuildMaintainableBazelWorkspace"
+  - "3.4.1:Genrule"
+  - "3.4.2:Gazelle"
+  - "3.4.3:Buildozer"
+  - "3.4.4:CodeQualityIntegration"
+  - "3.4.5:UnusedDeps"
+languages:
+  - java
+  - shell
+commands:
+  - command: "bazel build //..."
+    expect: success
+    description: "Builds the Java app, generated source, and maintenance helper targets."
+  - command: "bazel test //..."
+    expect: success
+    description: "Runs the Java smoke test that exercises maintained deps and generated code."
+  - command: "bazel run //app:maintenance_app"
+    expect: success
+    description: "Runs the application that imports code from maintained BUILD deps."
+  - command: "bazel run //tools:check_build_files"
+    expect: success
+    description: "Runs the lightweight BUILD-file quality gate used by this example."
+  - command: "bazel run //tools:print_format_plan"
+    expect: success
+    description: "Prints the buildifier-oriented formatting commands for review."
+  - command: "bazel run //tools:print_gazelle_plan"
+    expect: success
+    description: "Prints the Gazelle update workflow without requiring Gazelle to be installed."
+  - command: "bazel run //tools:print_buildozer_plan"
+    expect: success
+    description: "Prints reviewable buildozer edits for adding, replacing, and pruning deps."
+bazel_version: "9.0.0"

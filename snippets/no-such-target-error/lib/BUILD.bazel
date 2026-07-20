@@ -1,0 +1,4 @@
+filegroup(
+    name = "present",
+    srcs = ["data.txt"],
+)

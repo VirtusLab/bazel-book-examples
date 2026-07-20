@@ -1,0 +1,4 @@
+module app.macro
+import stdlib.print
+message "hello from symbolic macro"
+entry main

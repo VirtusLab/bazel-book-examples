@@ -1,0 +1,35 @@
+load("@bazel_skylib//:bzl_library.bzl", "bzl_library")
+load(":settings.bzl", "glyph_mode")
+
+package(default_visibility = ["//visibility:public"])
+
+glyph_mode(
+    name = "mode",
+    build_setting_default = "fast",
+    values = [
+        "fast",
+        "debug",
+    ],
+)
+
+glyph_mode(
+    name = "target_os",
+    build_setting_default = "host",
+    values = [
+        "host",
+        "linux",
+        "macos",
+    ],
+)
+
+config_setting(
+    name = "debug_mode",
+    flag_values = {":mode": "debug"},
+)
+
+# bzl_library targets model the .bzl load graph so Stardoc can resolve every
+# transitively loaded file from //glyph:defs.bzl.
+bzl_library(
+    name = "settings_bzl",
+    srcs = ["settings.bzl"],
+)

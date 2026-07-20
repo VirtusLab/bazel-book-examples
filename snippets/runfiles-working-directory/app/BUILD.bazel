@@ -1,0 +1,9 @@
+load("@rules_shell//shell:sh_binary.bzl", "sh_binary")
+
+sh_binary(
+    name = "inspect",
+    srcs = ["inspect.sh"],
+    args = ["$(rlocationpath //app:message.txt)"],
+    data = ["message.txt"],
+    deps = ["@bazel_tools//tools/bash/runfiles"],
+)

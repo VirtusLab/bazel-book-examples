@@ -1,0 +1,16 @@
+id: snippets/golden-file-accept
+title: Golden File Test-Accept Pattern
+description: >-
+  Demonstrates the Bazel golden-file workflow: a normal test verifies generated
+  output against a checked-in golden, and a paired `.accept` target updates the
+  golden via `bazel run` when the change is intentional.
+refs:
+  - "1.2.9:GoldenFileTesting"
+commands:
+  - command: "bazel test //:report_test"
+    expect: success
+    description: "Verifies that the generated report still matches the checked-in golden"
+  - command: "bazel run //:report.accept"
+    expect: success
+    description: "Runs the accept path; it is a no-op when the golden is already current"
+bazel_version: "9.0.0"

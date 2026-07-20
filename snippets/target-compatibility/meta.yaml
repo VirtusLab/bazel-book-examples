@@ -1,0 +1,27 @@
+id: snippets/target-compatibility
+title: Target Compatibility
+description: >-
+  Demonstrates how wildcard target patterns skip incompatible targets while
+  explicit incompatible target requests fail, including transitive incompatibility.
+refs:
+  - "3.3.4:TargetCompatibility"
+  - "3.3.5:PlatformsFlag"
+  - "4.6.6:CustomConstraints"
+  - "4.6.7:IncompatiblePlatformProvider"
+commands:
+  - command: "bazel build --platforms=//platforms:linux //..."
+    expect: success
+    description: "Builds everything compatible with //platforms:linux and silently skips mac-only targets."
+  - command: "bazel build --platforms=//platforms:linux //app:mac_only"
+    expect: error
+    description: "Fails because the explicitly requested target is only compatible with the macOS platform."
+  - command: "bazel build --platforms=//platforms:linux //app:depends_on_mac_only"
+    expect: error
+    description: "Fails because incompatibility propagates through the dependency on //app:mac_only."
+  - command: "bazel build --platforms=//platforms:linux --skip_incompatible_explicit_targets //app:mac_only"
+    expect: success
+    description: "Shows the optional flag that skips an explicitly requested incompatible target instead of failing."
+  - command: "bazel cquery --platforms=//platforms:linux //app:all --output=starlark --starlark:file=incompat.cquery"
+    expect: success
+    description: "Lists every target with its IncompatiblePlatformProvider status, demonstrating direct and transitive incompatibility detection from cquery."
+bazel_version: "9.0.0"

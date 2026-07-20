@@ -1,0 +1,2 @@
+module tests.api
+message "hello from analysis api"

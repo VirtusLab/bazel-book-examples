@@ -1,0 +1,22 @@
+# Global default that applies to every command that understands the flag.
+# `common` is the layer maintainers reach for when a flag should follow every
+# applicable command instead of being copy-pasted under build/test/query.
+common --color=yes
+
+# CI named config. Nothing here applies until --config=ci is in effect, so the
+# snippet stays usable for an interactive `bazel build //app:app` while the
+# CI defaults remain a deliberate opt-in.
+build:ci --keep_going
+build:ci --noshow_progress
+build:ci --color=no
+build:ci --curses=no
+
+# `test` inherits from `build`, so a test:ci line is the right place for a
+# flag that only `bazel test` understands.
+test:ci --test_output=errors
+
+# Personal overrides go in user.bazelrc, which is git-ignored. `try-import`
+# means the file is optional — the workspace .bazelrc is fully usable without
+# it, but if a developer copies user.bazelrc.example to user.bazelrc, those
+# lines win because import-position is "last imported, last applied".
+try-import %workspace%/user.bazelrc

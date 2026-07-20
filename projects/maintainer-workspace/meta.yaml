@@ -1,0 +1,59 @@
+id: projects/maintainer-workspace
+title: Maintainer Workspace
+description: >-
+  A small modern Bazel workspace that ties together Bzlmod, module extensions,
+  shared bazelrc policy, platform targets, select(), and target compatibility.
+refs:
+  - "3.8.1:BuildMaintainableBazelWorkspace"
+  - "3.1.1:Bzlmod"
+  - "3.1.2:Extensions"
+  - "3.1.3:RepoMapping"
+  - "3.2.1:BazelrcHierarchy"
+  - "3.2.4:CommandLineFlags"
+  - "3.2.6:HermeticitySettings"
+  - "3.2.8:ToolsBazelWrapper"
+  - "3.3.1:Select"
+  - "3.3.3:ConstraintValues"
+  - "3.3.4:TargetCompatibility"
+  - "3.3.5:PlatformsFlag"
+languages:
+  - java
+  - shell
+commands:
+  - command: "bazel build //..."
+    expect: success
+    description: "Builds the compiled Java app and platform-specific tools"
+  - command: "bazel test //app:app_core_test"
+    expect: success
+    description: "Runs the compiled Java test for the selected platform implementation"
+  - command: "bazel run //app:maintainer_app"
+    expect: success
+    description: "Runs the host-compatible Java binary and reads generated policy data through runfiles"
+  - command: "bazel run --config=release //app:maintainer_app"
+    expect: success
+    description: "Shows the release named config setting compilation_mode=opt"
+  - command: "bazel run //services:service_probe"
+    expect: success
+    description: "Demonstrates shell runfiles lookup with rlocationpath"
+  - command: "bazel build --config=linux //app:maintainer_app"
+    expect: success
+    description: "Builds the Java app for the Linux target platform"
+  - command: "bazel build --config=macos //services:all"
+    expect: success
+    description: "Shows package wildcard builds skipping an incompatible Linux-only target"
+  - command: "bazel build --config=macos //app:linux_admin_tool"
+    expect: error
+    description: "Explicitly requesting an incompatible target fails"
+  - command: "bazel build --announce_rc --config=ci //..."
+    expect: success
+    description: "Shows named config expansion from the workspace .bazelrc"
+  - command: "bazel test --config=ci //..."
+    expect: success
+    description: "Runs the end-state acceptance command used by the checked-in CI workflow"
+  - command: "bash tools/ci_bazel.sh //..."
+    expect: success
+    description: "Runs the CI entry point and preserves the Bazel test exit code"
+  - command: "bazel canonicalize-flags --for_command=build -- --config=release -c opt"
+    expect: success
+    description: "Normalizes command-line flags without expanding named configs"
+bazel_version: "9.0.0"

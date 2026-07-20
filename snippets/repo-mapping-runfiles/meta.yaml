@@ -1,0 +1,25 @@
+id: snippets/repo-mapping-runfiles
+title: Repo Mapping And Runfiles
+description: >-
+  Demonstrates why runtime code should locate data via runfiles APIs and
+  $(rlocationpath ...) instead of hard-coded external/<name> paths. A tiny
+  module extension creates an auxiliary repo, one sh_binary reads its data
+  through the runfiles library, and a sibling script documents the
+  canonical-path anti-pattern.
+refs:
+  - "3.1.3:RepoMapping"
+  - "1.1.2:BazelRun"
+commands:
+  - command: "bazel build //app:uses_runfiles"
+    expect: success
+    description: "Builds the runfiles-safe binary; exercises $(rlocationpath @aux_data//:value.txt)."
+  - command: "bazel run //app:uses_runfiles"
+    expect: success
+    description: "Runs the binary; the runfiles library resolves the apparent name @aux_data to whatever canonical layout Bazel produced."
+  - command: "bazel run //app:assumes_canonical_path"
+    expect: success
+    description: "Runs the anti-pattern documentation script; it only prints a warning and exits 0 so validation stays reproducible."
+  - command: "bazel mod show_repo @aux_data"
+    expect: success
+    description: "Shows the apparent->canonical mapping for the auxiliary repo created by the module extension."
+bazel_version: "9.0.0"

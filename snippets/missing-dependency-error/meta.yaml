@@ -1,0 +1,18 @@
+id: snippets/missing-dependency-error
+title: Missing Direct Dependency Error
+description: >-
+  Demonstrates a source file importing code from another target without listing
+  that target in deps, then fixes the direct dependency edge.
+refs:
+  - "0.3.3:Attributes"
+  - "1.1.10:CommonErrors"
+  - "2.1.4:DependencyIssues"
+commands:
+  - command: "bazel build //app:server_missing_dep"
+    expect: error
+    description: "Fails because Main.java imports Helper without declaring //lib:helper in deps."
+  - command: "bazel build //app:server_fixed"
+    expect: success
+    description: "Succeeds once the Java binary declares its direct dependency on //lib:helper."
+rules_java_version: "9.0.3"
+bazel_version: "9.0.0"
