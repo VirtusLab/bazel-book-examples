@@ -48,9 +48,7 @@ refs:
   - "4.11.4:PublishingRulesets"
   - "4.13.1:BuildRulesetEndToEnd"
   - "4.11.2:Toolchainization"
-  - ref: "5.1.3:Aquery"
-    value: high
-    notes: "The GlyphReport action and the checked-in aquery commands demonstrate filtering by mnemonic and inspecting the generated action contract for concrete targets."
+  - "5.1.3:Aquery"
 languages:
   - bazel
   - python
