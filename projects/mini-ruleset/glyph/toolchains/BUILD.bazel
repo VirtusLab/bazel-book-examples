@@ -3,7 +3,7 @@ load(":toolchain.bzl", "glyph_toolchain")
 
 package(default_visibility = ["//visibility:public"])
 
-toolchain_type(name = "glyph_toolchain_type")
+toolchain_type(name = "toolchain_type")
 
 glyph_toolchain(
     name = "source_toolchain_impl",
@@ -14,7 +14,7 @@ glyph_toolchain(
 toolchain(
     name = "source_toolchain",
     toolchain = ":source_toolchain_impl",
-    toolchain_type = ":glyph_toolchain_type",
+    toolchain_type = ":toolchain_type",
 )
 
 bzl_library(

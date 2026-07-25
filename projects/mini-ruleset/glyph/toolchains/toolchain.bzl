@@ -8,7 +8,7 @@ GlyphToolchainInfo = provider(
     },
 )
 
-GLYPH_TOOLCHAIN_TYPE = Label("//glyph/toolchains:glyph_toolchain_type")
+GLYPH_TOOLCHAIN_TYPE = Label("//glyph/toolchains:toolchain_type")
 
 def _glyph_toolchain_impl(ctx):
     # For teaching: this implementation points at a compiler built from source
