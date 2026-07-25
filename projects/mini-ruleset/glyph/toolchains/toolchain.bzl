@@ -1,5 +1,7 @@
 """Toolchain contract for the Glyph compiler."""
 
+visibility("public")
+
 GlyphToolchainInfo = provider(
     doc = "Executable tools needed by Glyph rules.",
     fields = {
