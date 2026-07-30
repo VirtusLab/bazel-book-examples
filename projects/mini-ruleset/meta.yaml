@@ -136,4 +136,4 @@ commands:
   - command: "bazel run //tools/release:print_release_plan"
     expect: success
     description: "Prints the release/BCR checklist a real ruleset would automate."
-bazel_version: "9.0.0"
+bazel_version: "9.1.0"

@@ -73,6 +73,12 @@ use_repo(pip, "rules_glyph_pip")
 # compiler resolves to Protobuf 34's official prebuilt protoc toolchain.
 bazel_dep(name = "protobuf", version = "34.1", dev_dependency = True)
 
+# Protobuf's maintainer graph pulls in rules_go transitively. Bazel 9.1
+# requires a release that loads CcInfo from rules_cc instead of the removed
+# global symbol. Keep the dependency private because this ruleset does not
+# expose Go rules or repositories.
+bazel_dep(name = "rules_go", version = "0.61.1", repo_name = None, dev_dependency = True)
+
 # Runtime dependency: public ruleset packages declare bzl_library targets so
 # Stardoc can model their load graph. Loading those BUILD files as a non-root
 # module therefore needs bazel_skylib even when docs/tests are not requested.
