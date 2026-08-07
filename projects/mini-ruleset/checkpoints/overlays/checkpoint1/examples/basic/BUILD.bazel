@@ -1,0 +1,7 @@
+load("//glyph/internal:rules.bzl", "glyph_library")
+
+glyph_library(
+    name = "bootstrap",
+    srcs = ["bootstrap.glyph"],
+    module = "app.bootstrap",
+)

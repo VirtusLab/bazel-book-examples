@@ -1,0 +1,5 @@
+load("//glyph/internal:rules.bzl", "glyph_library")
+
+# This package is intentionally outside //glyph/...; loading the implementation
+# must fail before this target can be declared.
+filegroup(name = "illegal_internal_load")

@@ -1,0 +1,22 @@
+load(":map_directory.bzl", "mapped_files")
+load(":shadowed_action.bzl", "shadowed_action_probe")
+load(":subrule.bzl", "subrule_copy")
+
+genrule(
+    name = "copy_tool",
+    outs = ["copy_tool.sh"],
+    cmd = "printf '#!/usr/bin/env bash\\ncase \"$$1\" in\\n  emit) cp \"$$2\" \"$$3\" ;;\\n  sidecar) test \"$$ORIGINAL_ENV\" = from-original && test \"$$SIDECAR\" = from-sidecar || exit 1; printf \"%%s/%%s\\\\n\" \"$$ORIGINAL_ENV\" \"$$SIDECAR\" > \"$$3\"; cat \"$$2\" >> \"$$3\" ;;\\n  *) cp \"$$1\" \"$$2\" ;;\\nesac\\n' > $@ && chmod +x $@",
+    executable = True,
+)
+
+mapped_files(name = "mapped_files")
+
+subrule_copy(
+    name = "subrule_copy",
+    src = "input.txt",
+)
+
+shadowed_action_probe(
+    name = "shadowed_action_probe",
+    src = "input.txt",
+)

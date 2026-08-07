@@ -1,0 +1,9 @@
+load("//glyph:defs.bzl", "glyph_library")
+
+package(default_visibility = ["//visibility:public"])
+
+glyph_library(
+    name = "bootstrap",
+    srcs = ["bootstrap.glyph"],
+    module = "app.bootstrap",
+)

@@ -1,0 +1,20 @@
+id: snippets/experimental-rule-apis
+title: Experimental Rule API Probes
+description: >-
+  Runs the smallest isolated Bazel 9.1.0 probes for map_directory(), a subrule
+  with a private executable, and shadowed_action using a test-only Action handle.
+refs:
+  - "4.8.7:ShadowedAction"
+  - "4.12.1:MapDirectory"
+  - "4.12.3:Subrules"
+commands:
+  - command: "bazel build //:mapped_files"
+    expect: success
+    description: "Expands a generated tree and creates one mapped output per child."
+  - command: "bazel build //:subrule_copy"
+    expect: success
+    description: "Calls a declared subrule whose private executable copies the source."
+  - command: "bazel build //:shadowed_action_probe"
+    expect: success
+    description: "Uses a test-only Action handle so the sidecar inherits an input and environment."
+bazel_version: "9.1.0"

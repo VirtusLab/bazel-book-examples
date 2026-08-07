@@ -1,0 +1,8 @@
+genrule(
+    name = "glyphc",
+    srcs = ["glyphc.py"],
+    outs = ["glyphc_tool.py"],
+    cmd = "cp $< $@ && chmod +x $@",
+    executable = True,
+    visibility = ["//visibility:public"],
+)
