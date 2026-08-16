@@ -4,3 +4,9 @@ sh_binary(
     name = "ci_bazel",
     srcs = ["ci_bazel.sh"],
 )
+
+sh_binary(
+    name = "prove_shared_remote_cache",
+    srcs = ["prove_shared_remote_cache.sh"],
+    data = ["//tests:remote_cache_proof_test"],
+)

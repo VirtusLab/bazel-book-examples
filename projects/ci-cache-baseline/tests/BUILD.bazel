@@ -1,3 +1,4 @@
+load("@rules_shell//shell:sh_binary.bzl", "sh_binary")
 load("@rules_shell//shell:sh_test.bzl", "sh_test")
 
 sh_test(
@@ -16,4 +17,10 @@ sh_test(
     data = ["//app:uppercase_message"],
     size = "small",
     deps = ["@bazel_tools//tools/bash/runfiles"],
+)
+
+sh_binary(
+    name = "remote_cache_proof_test",
+    srcs = ["remote_cache_proof_test.sh"],
+    visibility = ["//tools:__pkg__"],
 )

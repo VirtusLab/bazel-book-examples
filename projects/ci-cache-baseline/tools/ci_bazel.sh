@@ -6,7 +6,7 @@ if [[ "$#" -eq 0 ]]; then
 fi
 
 set +e
-bazel test --config=ci "$@"
+bazel test --symlink_prefix=/ --config=ci "$@"
 status="$?"
 set -e
 

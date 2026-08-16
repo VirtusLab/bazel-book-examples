@@ -2,8 +2,8 @@ id: projects/ci-cache-baseline
 title: CI Cache Baseline
 description: >-
   A minimal Bazel CI workspace with a named CI config, cache paths for Bazelisk,
-  repository downloads, and action results, plus a tiny test suite that makes
-  bazel test --config=ci //... meaningful.
+  repository downloads, and action results, plus a live two-client proof that
+  one clean Bazel client can reuse an action uploaded by another.
 refs:
   - "3.8.1:BuildMaintainableBazelWorkspace"
   - "3.6.1:BasicCIRecipe"
@@ -12,13 +12,19 @@ refs:
   - "3.6.4:DiskCache"
   - "3.6.5:SimpleRemoteCache"
   - "3.6.6:CacheConsiderations"
+  - "6.2.2:SharedRemoteCacheSetup"
 languages:
   - shell
 commands:
-  - command: "bazel build --config=ci //..."
+  - command: "bazel build --symlink_prefix=/ --lockfile_mode=off --config=ci //..."
     expect: success
     description: "Builds the generated artifact, shell tests, and CI wrapper with the checked-in CI config."
-  - command: "bazel test --config=ci //..."
+  - command: "bazel test --symlink_prefix=/ --lockfile_mode=off --config=ci //..."
     expect: success
     description: "Runs the small test suite through the same named CI config used by the workflow."
+  - command: "bash tools/prove_shared_remote_cache.sh"
+    expect: success
+    hosts: [linux, darwin]
+    timeout_seconds: 600
+    description: "On upstream-supported Ubuntu 20.04+ or macOS 13+, starts pinned bazel-remote instances and proves miss/write, cross-client hit, and an empty-backend local-execution control."
 bazel_version: "9.0.0"
