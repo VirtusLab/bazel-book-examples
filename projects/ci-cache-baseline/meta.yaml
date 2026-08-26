@@ -13,6 +13,7 @@ refs:
   - "3.6.5:SimpleRemoteCache"
   - "3.6.6:CacheConsiderations"
   - "6.2.2:SharedRemoteCacheSetup"
+  - "6.5.9:SafeCIRunnerReuse"
 languages:
   - shell
 commands:

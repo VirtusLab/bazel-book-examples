@@ -6,6 +6,7 @@ description: >-
   touch TEST_SHARD_STATUS_FILE.
 refs:
   - "1.2.5:Sharding"
+  - "6.5.7:CIWorkDistribution"
 commands:
   - command: "bazel test //:sharded_test --test_output=all --cache_test_results=no"
     expect: success
