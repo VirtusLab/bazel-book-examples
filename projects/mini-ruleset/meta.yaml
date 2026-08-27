@@ -88,7 +88,7 @@ commands:
   - command: "bazel aquery 'mnemonic(\"GlyphReport\", //examples/basic:bootstrap_report)'"
     expect: success
     description: "Shows the stage-4 report action over the dependency-free bootstrap library scheduled on the root-only //platforms:report_worker demo platform."
-  - command: "bazel aquery 'mnemonic(\"GlyphReport\", //examples/basic:module_report)'"
+  - command: "bazel aquery 'mnemonic(\"GlyphReport\", //examples/basic:module_report)' --output=textproto"
     expect: success
     description: "Shows that the GlyphReport action is scheduled on //platforms:report_worker with its dedicated worker-pool execution property."
   - command: "bazel build //examples/basic:metadata --aspects=//tools/aspects:glyph_metadata_aspect.bzl%glyph_metadata_aspect --output_groups=glyph_metadata"

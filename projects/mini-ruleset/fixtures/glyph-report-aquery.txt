@@ -1,0 +1,13 @@
+# Captured with Bazel 9.1.0 from:
+# bazel aquery 'mnemonic("GlyphReport", //examples/basic:module_report)' --output=textproto
+# Unrelated action fields are omitted; line numbers are not part of the output.
+actions {
+  action_key: "602faa9be8052c8e235c71fe3e0f00c531632e811a05d0f3b95dcbe562223c18"
+  mnemonic: "GlyphReport"
+  arguments: "bazel-out/report_worker-opt-exec/bin/compiler/glyphc"
+  execution_info {
+    key: "Pool"
+    value: "glyph-report"
+  }
+  execution_platform: "//platforms:report_worker"
+}
