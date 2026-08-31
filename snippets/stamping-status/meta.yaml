@@ -7,7 +7,7 @@ description: >-
 refs:
   - "3.2.3:Stamping"
   - "2.4:Caching"
-  - "5.2.3:StampingCacheImpact"
+  - "5.4.4:StampingCacheImpact"
 commands:
   - command: "bash tools/run_cache_experiment.sh"
     expect: success

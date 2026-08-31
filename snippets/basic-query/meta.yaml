@@ -6,8 +6,8 @@ description: >-
 refs:
   - "0.2.3:TargetPatterns"
   - "1.1.8:QueryPreview"
-  - "5.1.1:QueryBasics"
-  - "5.1.6:SkyQuery"
+  - "5.2.1:QueryBasics"
+  - "5.2.6:SkyQuery"
 commands:
   - command: "bazel query //..."
     expect: success
