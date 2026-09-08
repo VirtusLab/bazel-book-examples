@@ -49,7 +49,7 @@ refs:
   - "4.13.1:BuildRulesetEndToEnd"
   - "4.11.2:Toolchainization"
   - "5.2.3:Aquery"
-  - "6.3.2:RemoteExecutorMatching"
+  - "6.3.3:RemoteExecutorMatching"
 languages:
   - bazel
   - python
