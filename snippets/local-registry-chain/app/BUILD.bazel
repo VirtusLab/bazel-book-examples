@@ -1,4 +1,11 @@
+genrule(
+    name = "message",
+    srcs = ["@registry_dep//:message.txt"],
+    outs = ["resolved-message.txt"],
+    cmd = "cp $(location @registry_dep//:message.txt) $@",
+)
+
 filegroup(
     name = "uses_registry_dep",
-    srcs = ["@registry_dep//:message.txt"],
+    srcs = [":message"],
 )

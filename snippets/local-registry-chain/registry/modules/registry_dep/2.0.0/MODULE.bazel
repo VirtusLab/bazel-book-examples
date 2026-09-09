@@ -1,0 +1,4 @@
+module(
+    name = "registry_dep",
+    version = "2.0.0",
+)
