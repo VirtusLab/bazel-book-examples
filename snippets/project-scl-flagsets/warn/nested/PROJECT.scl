@@ -1,0 +1,13 @@
+load("//:project_proto.scl", "buildable_unit_pb2", "project_pb2")
+
+# The innermost PROJECT.scl wins: //warn/nested targets ignore //warn:PROJECT.scl.
+project = project_pb2.Project.create(
+    buildable_units = [
+        buildable_unit_pb2.BuildableUnit.create(
+            name = "nested_debug",
+            target_patterns = ["//warn/nested/..."],
+            flags = ["--compilation_mode=dbg"],
+            is_default = True,
+        ),
+    ],
+)

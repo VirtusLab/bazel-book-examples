@@ -1,0 +1,14 @@
+load("//:project_proto.scl", "buildable_unit_pb2", "project_pb2")
+
+# Ignored: Bazel only looks for a file named exactly PROJECT.scl, so
+# //lowercase:mode builds with Bazel's defaults instead of this config.
+project = project_pb2.Project.create(
+    buildable_units = [
+        buildable_unit_pb2.BuildableUnit.create(
+            name = "release",
+            target_patterns = ["//lowercase/..."],
+            flags = ["--compilation_mode=opt"],
+            is_default = True,
+        ),
+    ],
+)

@@ -1,0 +1,13 @@
+load("//:project_proto.scl", "buildable_unit_pb2", "project_pb2")
+
+# No unit sets is_default, so every build of //no_default must pass --scl_config.
+project = project_pb2.Project.create(
+    buildable_units = [
+        buildable_unit_pb2.BuildableUnit.create(
+            name = "dev",
+            target_patterns = ["//no_default/..."],
+            flags = ["--compilation_mode=dbg"],
+            description = "Debug build, only applied with --scl_config=dev.",
+        ),
+    ],
+)

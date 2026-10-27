@@ -1,0 +1,20 @@
+load("//:project_proto.scl", "buildable_unit_pb2", "project_pb2")
+
+# No enforcement_policy, so Bazel uses the default: WARN.
+project = project_pb2.Project.create(
+    buildable_units = [
+        buildable_unit_pb2.BuildableUnit.create(
+            name = "release",
+            target_patterns = ["//warn/..."],
+            flags = ["--compilation_mode=opt"],
+            is_default = True,
+            description = "Optimized build, applied when --scl_config is not set.",
+        ),
+        buildable_unit_pb2.BuildableUnit.create(
+            name = "dev",
+            target_patterns = ["//warn/..."],
+            flags = ["--compilation_mode=dbg"],
+            description = "Debug build, selected with --scl_config=dev.",
+        ),
+    ],
+)

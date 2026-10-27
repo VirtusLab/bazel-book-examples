@@ -1,0 +1,14 @@
+load("//:project_proto.scl", "buildable_unit_pb2", "project_pb2")
+
+project = project_pb2.Project.create(
+    # Fail when the command line or an rc file sets a flag this config also sets.
+    enforcement_policy = "compatible",
+    buildable_units = [
+        buildable_unit_pb2.BuildableUnit.create(
+            name = "release",
+            target_patterns = ["//compatible/..."],
+            flags = ["--compilation_mode=opt"],
+            is_default = True,
+        ),
+    ],
+)

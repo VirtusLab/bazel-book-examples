@@ -1,0 +1,60 @@
+id: snippets/project-scl-flagsets
+title: PROJECT.scl Flagsets and Enforcement Policies
+description: >-
+  Pins how experimental PROJECT.scl files behave on Bazel 9.1.0: the
+  is_default buildable unit applies automatically, --scl_config picks another
+  one, WARN/COMPATIBLE/STRICT treat command-line and workspace .bazelrc flags
+  differently, the innermost PROJECT.scl owns a target, and one build cannot
+  mix targets owned by different project files. STRICT currently fails even
+  with no user flags because Bazel counts rules_python's --flag_alias entries.
+refs:
+  - "3.2.7:ProjectSpecifications"
+  - "3.2.1:BazelrcHierarchy"
+  - "3.2.4:CommandLineFlags"
+commands:
+  - command: "bazel build //warn:mode"
+    expect: success
+    description: "No --scl_config: Bazel reads //warn:PROJECT.scl and applies the is_default 'release' unit (--compilation_mode=opt). bazel-bin/warn/mode.txt contains 'opt'."
+  - command: "bazel build //warn:mode --scl_config=dev"
+    expect: success
+    description: "--scl_config=dev selects the non-default 'dev' unit, so mode.txt contains 'dbg'."
+  - command: "bazel build //warn:mode --define=x=1"
+    expect: success
+    description: "WARN (the default policy) lists --define=x=1 in a warning about output-affecting flags and keeps building."
+  - command: "bazel build //warn:mode --compilation_mode=dbg"
+    expect: success
+    description: "WARN with a conflicting flag only warns, and the project's --compilation_mode=opt wins over the command line: mode.txt still contains 'opt'."
+  - command: "bazel build //compatible:mode --compilation_mode=dbg"
+    expect: error
+    description: "COMPATIBLE rejects a command-line flag that the selected config also sets to a different value."
+  - command: "bazel build //compatible:mode --define=x=1"
+    expect: success
+    description: "COMPATIBLE only warns about an output-affecting flag the selected config does not set."
+  - command: "bazel cquery //compatible:mode"
+    expect: error
+    description: "The checked-in workspace .bazelrc sets cquery --compilation_mode=dbg. Bazel treats it like a command-line flag, so the COMPATIBLE project rejects it."
+  - command: "bazel build //strict:mode"
+    expect: error
+    description: "STRICT fails with no user flags on Bazel 9.1.0 because module-registered rules_python --flag_alias entries count as user flags. If this starts succeeding, Bazel fixed the quirk and the article needs updating."
+  - command: "bazel build //warn:mode --noenforce_project_configs"
+    expect: success
+    description: "Turns project resolution off: no 'Reading project settings' line, and mode.txt contains 'fastbuild'."
+  - command: "bazel build //warn:mode //no_project:mode"
+    expect: success
+    description: "//no_project has no PROJECT.scl above it, but when built together with //warn:mode it also gets the 'release' flags."
+  - command: "bazel build //warn:mode //warn/nested:mode"
+    expect: error
+    description: "//warn/nested has its own PROJECT.scl, which overrides //warn:PROJECT.scl for its targets. Building both in one invocation fails with 'Mismatching default configs for a multi-project build'."
+  - command: "bazel build //warn:mode --scl_config=nope"
+    expect: error
+    description: "An unknown --scl_config fails and lists the valid configs with their description fields."
+  - command: "bazel build //no_default:mode"
+    expect: error
+    description: "//no_default:PROJECT.scl has no is_default unit, so a build without --scl_config fails with 'This project's builds must set --scl_config because no default config is defined.'"
+  - command: "bazel build //no_default:mode --scl_config=dev"
+    expect: success
+    description: "Selecting the unit explicitly works: mode.txt contains 'dbg'."
+  - command: "bash tools/assert_project_scl.sh"
+    expect: success
+    description: "Runs every scenario above, plus the nested project alone, //no_project alone, COMPATIBLE with a matching value, and the ignored lowercase project.scl (Linux only). Asserts the INFO/WARNING/ERROR lines and the mode.txt contents."
+bazel_version: "9.1.0"

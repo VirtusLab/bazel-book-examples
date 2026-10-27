@@ -1,0 +1,6 @@
+# mode.txt records the compilation mode this target was actually built with.
+genrule(
+    name = "mode",
+    outs = ["mode.txt"],
+    cmd = "echo $(COMPILATION_MODE) > $@",
+)

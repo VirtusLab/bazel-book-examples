@@ -1,0 +1,5 @@
+# A checked-in workspace rc line, scoped to `cquery` so only the dedicated
+# `bazel cquery //compatible:mode` demo sees it. As a `build` line it would
+# reach every build in this snippet. Bazel still counts it as a "command line
+# or user bazelrc" flag, so it conflicts with //compatible:PROJECT.scl.
+cquery --compilation_mode=dbg

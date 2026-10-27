@@ -1,0 +1,14 @@
+load("//:project_proto.scl", "buildable_unit_pb2", "project_pb2")
+
+project = project_pb2.Project.create(
+    # Fail when anything outside this file sets an output-affecting flag.
+    enforcement_policy = "strict",
+    buildable_units = [
+        buildable_unit_pb2.BuildableUnit.create(
+            name = "release",
+            target_patterns = ["//strict/..."],
+            flags = ["--compilation_mode=opt"],
+            is_default = True,
+        ),
+    ],
+)
