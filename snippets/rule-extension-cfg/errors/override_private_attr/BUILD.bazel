@@ -1,0 +1,3 @@
+load(":defs.bzl", "retemplated_report")
+
+retemplated_report(name = "report")

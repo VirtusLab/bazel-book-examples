@@ -1,0 +1,19 @@
+load("@upstream_rules//:report.bzl", "mode_report")
+load("//rules:opt.bzl", "opt_dbg_report", "opt_mode_report")
+
+mode_report(name = "lib")
+
+mode_report(
+    name = "plain",
+    deps = [":lib"],
+)
+
+opt_mode_report(
+    name = "optimized",
+    deps = [":lib"],
+)
+
+opt_dbg_report(
+    name = "pinned",
+    deps = [":lib"],
+)

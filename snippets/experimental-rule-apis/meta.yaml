@@ -3,6 +3,9 @@ title: Experimental Rule API Probes
 description: >-
   Runs the smallest isolated Bazel 9.1.0 probes for map_directory(), a subrule
   with a private executable, and shadowed_action using a test-only Action handle.
+  Error cases under errors/ pin the subrule contract: the API flag, the missing
+  exec_group parameter, automatic exec groups for a subrule that reads its
+  toolchain, and the export requirement.
 refs:
   - "4.8.7:ShadowedAction"
   - "4.12.1:MapDirectory"
@@ -17,4 +20,22 @@ commands:
   - command: "bazel build //:shadowed_action_probe"
     expect: success
     description: "Uses a test-only Action handle so the sidecar inherits an input and environment."
+  - command: "bazel build --noexperimental_rule_extension_api //:subrule_copy"
+    expect: error
+    description: "With the API flag off, calling a subrule fails with 'Non-allowlisted attempt to use subrules.'"
+  - command: "bazel build //errors/subrule_exec_group:probe"
+    expect: error
+    description: "subrule() rejects exec_group with 'got unexpected keyword argument'."
+  - command: "bazel build //errors/subrule_toolchain:without_aeg"
+    expect: error
+    description: "A subrule that reads ctx.toolchains fails analysis unless the consuming rule uses automatic exec groups."
+  - command: "bazel build //errors/subrule_toolchain:with_aeg"
+    expect: success
+    description: "The same subrule works once the consuming rule sets _use_auto_exec_groups = True."
+  - command: "bazel build //errors/unexported_subrule:probe"
+    expect: error
+    description: "A subrule reachable only through a struct fails with 'Invalid subrule hasn't been exported by a bzl file'."
+  - command: "bash tools/assert_subrule_errors.sh"
+    expect: success
+    description: "Runs the subrule cases above and checks each error message."
 bazel_version: "9.1.0"

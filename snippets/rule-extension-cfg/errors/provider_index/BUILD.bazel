@@ -1,0 +1,3 @@
+load(":defs.bzl", "indexed_report")
+
+indexed_report(name = "report")

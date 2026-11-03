@@ -1,0 +1,3 @@
+load(":defs.bzl", "opt_mode_report")
+
+opt_mode_report(name = "report")

@@ -1,0 +1,15 @@
+load(":defs.bzl", "empty_toolchain", "toolchain_subrule_aeg_rule", "toolchain_subrule_rule")
+
+toolchain_type(name = "toolchain_type")
+
+empty_toolchain(name = "empty_toolchain")
+
+toolchain(
+    name = "toolchain",
+    toolchain = ":empty_toolchain",
+    toolchain_type = ":toolchain_type",
+)
+
+toolchain_subrule_rule(name = "without_aeg")
+
+toolchain_subrule_aeg_rule(name = "with_aeg")

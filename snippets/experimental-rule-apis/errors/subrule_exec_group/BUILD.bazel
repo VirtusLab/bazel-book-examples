@@ -1,0 +1,3 @@
+load(":defs.bzl", "exec_group_subrule_rule")
+
+exec_group_subrule_rule(name = "probe")

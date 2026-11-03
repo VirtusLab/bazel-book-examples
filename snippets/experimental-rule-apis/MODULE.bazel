@@ -1,1 +1,3 @@
 module(name = "experimental_rule_apis")
+
+register_toolchains("//errors/subrule_toolchain:toolchain")

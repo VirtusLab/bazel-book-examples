@@ -1,0 +1,3 @@
+load(":defs.bzl", "string_deps_report")
+
+string_deps_report(name = "report")

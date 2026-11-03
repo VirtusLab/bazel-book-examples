@@ -1,0 +1,14 @@
+load("//rules:company.bzl", "mode_report")
+
+mode_report(name = "core")
+
+mode_report(
+    name = "report",
+    deps = [":core"],
+)
+
+filegroup(
+    name = "sorted",
+    srcs = [":report"],
+    output_group = "sorted",
+)

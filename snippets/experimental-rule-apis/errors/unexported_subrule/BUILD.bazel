@@ -1,0 +1,3 @@
+load(":defs.bzl", "unexported_subrule_rule")
+
+unexported_subrule_rule(name = "probe")

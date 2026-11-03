@@ -1,0 +1,64 @@
+id: snippets/rule-extension-cfg
+title: Rule Extension That Adds a cfg Transition to an Upstream Rule
+description: >-
+  Pins rule(parent = ..., cfg = ...) with a pass-through ctx.super() on Bazel
+  9.1.0. An extension of a rule from a separate local module builds in opt
+  while the plain upstream target stays fastbuild, the transition reaches the
+  deps, a parent that owns its own cfg overrides the child's, query reports the
+  child rule's name, and a drop-in extension that reuses the parent's name keeps
+  kind() queries working while adding an output group from the ctx.super() list.
+  Error cases under errors/ pin the contract: the parent must be an extendable
+  Starlark rule, ctx.super() runs exactly once and returns a plain list, only
+  public label attributes can be overridden without changing their required
+  providers, and a target cannot return OutputGroupInfo twice.
+refs:
+  - "4.12.2:CtxSuper"
+  - "4.7.2:StarlarkTransitions"
+  - "4.7.4:TransitionGotchas"
+commands:
+  - command: "bazel build //app:plain //app:optimized //app:pinned"
+    expect: success
+    description: "plain (upstream rule) is fastbuild, optimized (opt_mode_report extension) is opt for itself and //app:lib, and pinned (extension of dbg_report, whose own cfg sets dbg) stays dbg."
+  - command: "bazel query 'kind(opt_mode_report, //app:all)' --output=label_kind"
+    expect: success
+    description: "Prints 'opt_mode_report rule //app:optimized': query reports the extension's own rule name, not the parent's."
+  - command: "bazel build //dropin:sorted"
+    expect: success
+    description: "The drop-in mode_report extension finds DefaultInfo in the ctx.super() list, sorts the parent's report in a new action, and exposes it as the 'sorted' output group."
+  - command: "bazel build //errors/extend_macro:report"
+    expect: error
+    description: "parent = mode_report_macro fails at load time with 'Parent needs to be a Starlark rule, was function'."
+  - command: "bazel build //errors/sealed_parent:report"
+    expect: error
+    description: "parent = sealed_report fails at load time because that rule sets extendable = False."
+  - command: "bazel build //errors/native_parent:report"
+    expect: error
+    description: "parent = native.genrule fails at load time with 'Parent needs to be a Starlark rule, was rule'."
+  - command: "bazel build //errors/super_not_called:report"
+    expect: error
+    description: "An implementation that never calls ctx.super() fails analysis with \"'super' was not called.\""
+  - command: "bazel build //errors/super_twice:report"
+    expect: error
+    description: "A second ctx.super() call fails with \"'super' called the second time.\""
+  - command: "bazel build //errors/provider_index:report"
+    expect: error
+    description: "Indexing the ctx.super() list with DefaultInfo fails with 'got Provider for sequence index, want int'."
+  - command: "bazel build //errors/duplicate_output_group:report"
+    expect: error
+    description: "Extending the drop-in rule, which already returns OutputGroupInfo, and appending another fails with 'Multiple conflicting returned providers with key OutputGroupInfo'."
+  - command: "bazel build //errors/override_string_attr:report"
+    expect: error
+    description: "Overriding the parent's public string attribute fails with 'Only label types maybe be overridden.'"
+  - command: "bazel build //errors/override_type_mismatch:report"
+    expect: error
+    description: "Overriding the parent's label-list deps with attr.string_list() fails with \"Types of parent and child's attributes mismatch.\""
+  - command: "bazel build //errors/override_private_attr:report"
+    expect: error
+    description: "Overriding the parent's private _template attribute fails with 'private attributes cannot be overridden.'"
+  - command: "bazel build //errors/override_providers:report"
+    expect: error
+    description: "Overriding deps with different required providers fails with \"can't override required providers\"."
+  - command: "bash tools/assert_rule_extension.sh"
+    expect: success
+    description: "Runs every scenario above, checks each report file through cquery --output=files, checks that //app:lib exists in two configurations, and checks the kind() output and every error message."
+bazel_version: "9.1.0"

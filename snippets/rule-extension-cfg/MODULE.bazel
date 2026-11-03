@@ -1,0 +1,8 @@
+module(name = "rule-extension-cfg")
+
+bazel_dep(name = "upstream_rules", version = "0.0.0")
+
+local_path_override(
+    module_name = "upstream_rules",
+    path = "third_party/upstream_rules",
+)
